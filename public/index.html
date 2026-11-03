@@ -92,7 +92,6 @@ a{color:var(--tomato)}
 @keyframes bob{50%{transform:translateY(-6%) rotate(8deg)}}
 .cell.haspz{background:#ffe9b0 !important}
 .cell.haspz .n{z-index:3;text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 3px #fff;color:var(--ink)}
-.cell .tr{position:absolute;right:1px;top:0;font-size:1em;z-index:2}
 .cell .who{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2.2em;z-index:2}
 .cell.occ .n{position:absolute;bottom:1px;right:2px;font-size:.75em;z-index:3;background:rgba(255,255,255,.85);border-radius:4px;padding:0 2px}
 .cell .tag{position:absolute;top:1px;left:1px;font-size:.62em;font-weight:800;color:#fff;border-radius:4px;padding:0 3px;z-index:3;line-height:1.4}
@@ -101,8 +100,6 @@ a{color:var(--tomato)}
 .cell.stunned .who{animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .cell.off .who{opacity:.35}
-.hidebanner{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(59,36,24,.82);color:#fff;
-  font-weight:800;padding:8px 14px;border-radius:14px;font-size:15px;z-index:5;pointer-events:none;white-space:nowrap}
 
 .panel{flex:0 0 auto;display:flex;flex-direction:column;gap:6px;padding:6px 10px 8px;border-top:2px solid var(--line);background:#fffaf3}
 .trow{display:flex;align-items:center;gap:8px;min-height:44px}
@@ -132,10 +129,6 @@ a{color:var(--tomato)}
 @keyframes wob{0%{transform:rotate(-7deg) scale(.86)}55%{transform:rotate(5deg) scale(1.03)}100%{transform:none}}
 .shake{animation:shk .3s}
 @keyframes shk{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
-/* 🍺 踩到啤酒:整個畫面醉醺醺 */
-.drunk .mapwrap,.drunk .panel{animation:drunk 1.6s ease-in-out infinite}
-@keyframes drunk{0%,100%{transform:rotate(0) translateX(0);filter:blur(0)}25%{transform:rotate(-2.5deg) translateX(-8px);filter:blur(1px)}
-  75%{transform:rotate(2.5deg) translateX(8px);filter:blur(1.4px)}}
 #stunbox{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%);z-index:50;background:rgba(59,36,24,.88);color:#fff;
   font-size:22px;font-weight:800;padding:14px 22px;border-radius:18px;pointer-events:none;text-align:center}
 
@@ -184,7 +177,7 @@ body.tv .tvside{display:flex;flex:0 0 300px;flex-direction:column;gap:10px;paddi
       質數格只要打它自己就能過 —— 但 91 不是質數喔。<br>
       店員<b>走進大盜的格子</b> = 抓到,店員過關!<br>
       大盜<b>撐到時間到</b>或<b>偷滿披薩</b> = 大盜勝。<br>
-      大盜每偷一片披薩會撿到道具:🍺🪑🛵🌶️🫥
+      大盜每偷一片披薩會撿到道具:🛵 外送車、🌶️ 辣椒粉、🪑 翻桌
     </div>
     <div class="note"><a href="#" id="bTv">📺 大螢幕觀戰模式</a></div>
   </div>
@@ -268,7 +261,7 @@ $("name").value = localStorage.getItem("pt_name") || "";
 if (qs.get("join")) $("jcode").value = qs.get("join");
 
 let ws, role = null, code = null, ROWS = 0, COLS = 0, WALLS = [], ITEMS = {}, S = null;
-let buf = "", endsAt = 0, cdEnds = 0, placing = -1, mixTimer = null, drunkTimer = null;
+let buf = "", endsAt = 0, cdEnds = 0, placing = -1, mixTimer = null;
 
 /* ---------- 連線 ---------- */
 function connect(then){
@@ -366,7 +359,7 @@ function countdown(ms){
 function startGame(m){
   ROWS = m.rows; COLS = m.cols; WALLS = m.walls; ITEMS = m.items;
   show("game");
-  buf = ""; drawBuf(); placing = -1; unscramble(); undrunk(); S = null;
+  buf = ""; drawBuf(); placing = -1; unscramble(); S = null;
   $("roleTag").textContent = role === "boss" ? "🦹 大盜" : role === "chaser" ? "👨‍🍳 店員" : "📺 觀戰";
   $("tvCode").textContent = "房號 " + code;
   $("items").classList.toggle("hide", role !== "boss");
@@ -404,7 +397,7 @@ function render(s){
   const cells = $("map").children;
   const at = {};
   s.people.forEach((p) => { if (p.pos !== null && p.pos !== undefined) at[p.pos] = p; });
-  const tables = new Set(s.tables), pizzas = new Set(s.pizzas), traps = new Set(s.traps);
+  const tables = new Set(s.tables), pizzas = new Set(s.pizzas);
   for (let i = 0; i < cells.length; i++){
     if (WALLS[i]) continue;
     const c = cells[i];
@@ -422,25 +415,16 @@ function render(s){
     if (c.className !== cls) c.className = cls;
     let html = `<span class="n">${s.nums[i]}</span>`;
     if (pizzas.has(i)) html += `<span class="pz">🍕</span>`;
-    if (traps.has(i)) html += `<span class="tr">🍺</span>`;
     if (p){
       html += `<span class="who">${p.role === "boss" ? "🦹" : "👨‍🍳"}</span>`;
       if (p.role === "chaser") html += `<span class="tag" style="background:${CCOL[p.idx]}">${esc(p.name.slice(0, 2))}</span>`;
     }
     if (c._h !== html){ c.innerHTML = html; c._h = html; }
   }
-  // 偽裝中:店員和大螢幕看不到大盜
-  let hb = $("map").querySelector(".hidebanner");
-  if (s.hiddenMs > 0 && role !== "boss"){
-    if (!hb){ hb = document.createElement("div"); hb.className = "hidebanner"; $("map").appendChild(hb); }
-    hb.textContent = "🫥 大盜偽裝中…";
-  } else if (hb) hb.remove();
-  if (role === "boss" && s.hiddenMs > 0) $("roleTag").textContent = `🫥 偽裝中 ${Math.ceil(s.hiddenMs / 1000)}s`;
-  else $("roleTag").textContent = role === "boss" ? "🦹 大盜" : role === "chaser" ? "👨‍🍳 店員" : "📺 觀戰";
+  $("roleTag").textContent = role === "boss" ? "🦹 大盜" : role === "chaser" ? "👨‍🍳 店員" : "📺 觀戰";
 
   if (me){
     cdEnds = Date.now() + Math.max(me.cdMs, me.stunMs);
-    if (me.stunMs > 0) stunBox("🍺 滑倒了!", me.stunMs);
     drawTarget(me);
     if (role === "boss") drawItems(me);
   }
@@ -544,13 +528,7 @@ addEventListener("keydown", (e) => {
 function fx(m){
   if (m.kind === "miss"){ $("disp").classList.remove("shake"); void $("disp").offsetWidth; $("disp").classList.add("shake"); if (navigator.vibrate) navigator.vibrate(120); }
   if (m.kind === "scramble") scramble(m.ms);
-  if (m.kind === "drunk"){
-    document.body.classList.add("drunk");
-    clearTimeout(drunkTimer); drunkTimer = setTimeout(undrunk, m.ms);
-    if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
-  }
 }
-function undrunk(){ clearTimeout(drunkTimer); document.body.classList.remove("drunk"); }
 let stunT = null;
 function stunBox(text, ms){
   $("stunbox").textContent = text; $("stunbox").classList.remove("hide");
@@ -570,7 +548,7 @@ function flash(text, kind){
 
 /* ---------- 結算 ---------- */
 function drawOver(m){
-  show("over"); placing = -1; undrunk(); unscramble(); $("stunbox").classList.add("hide");
+  show("over"); placing = -1; unscramble(); $("stunbox").classList.add("hide");
   const youWin = role === "boss" ? !m.chasersWin : role === "chaser" ? m.chasersWin : null;
   const head = m.why === "caught" ? `🚔 大盜被 ${esc(m.catcher)} 抓到了!`
              : m.why === "pizza"  ? `🦹 大盜帶著 ${m.got} 片披薩逃走了!`

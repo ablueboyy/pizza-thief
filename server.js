@@ -27,11 +27,8 @@ const wss = new WebSocketServer({ server });
 // ================= 規則參數(改這裡調平衡) =================
 const COUNTDOWN    = 3000;
 const MISS_CD      = 1000;  // 打錯:暈 1 秒
-const TRAP_STUN    = 3000;  // 🍺 踩到啤酒:不能輸入 3 秒
-const DRUNK_MS     = 5000;  // 🍺 踩到啤酒:畫面晃 5 秒(純視覺)
 const CHILI_MS     = 6000;  // 🌶️ 鍵盤打亂
 const CHILI_RANGE  = 3;     // 🌶️ 影響範圍(步數)
-const HIDE_MS      = 6000;  // 🫥 偽裝
 const TABLE_MS     = 12000; // 🪑 桌子維持多久
 const TABLE_RANGE  = 2;     // 🪑 可以放多遠
 const SCOOT_MOVES  = 3;     // 🛵 免解題的步數
@@ -117,11 +114,9 @@ function genNum() {
 
 // ================= 道具 =================
 const ITEMS = {
-  beer:  { emoji: "🍺", name: "灑啤酒", desc: "在腳下留一灘啤酒,店員踩到滑倒 3 秒" },
   table: { emoji: "🪑", name: "翻桌",   desc: "在 2 格內放一張桌子擋路 12 秒" },
   scoot: { emoji: "🛵", name: "外送車", desc: "接下來 3 步免解題" },
   chili: { emoji: "🌶️", name: "辣椒粉", desc: "3 步內的店員鍵盤亂掉 6 秒" },
-  hide:  { emoji: "🫥", name: "偽裝",   desc: "6 秒內店員看不到你" },
 };
 const ITEM_KEYS = Object.keys(ITEMS);
 
@@ -162,7 +157,7 @@ function mkPlayer(ws, name, tok, role) {
   return { id: crypto.randomUUID().slice(0, 8), ws, tok: String(tok || "").slice(0, 40), role,
            name: (String(name || "").trim() || (role === "boss" ? "大盜" : "店員")).slice(0, 8),
            pos: -1, aim: null, aimN: 0, rem: 0, got: [], cdUntil: 0, stunUntil: 0, scrambleUntil: 0,
-           moves: 0, misses: 0, items: [], freeMoves: 0, hiddenUntil: 0, pizzas: 0 };
+           moves: 0, misses: 0, items: [], freeMoves: 0, pizzas: 0 };
 }
 
 // ================= 大廳 =================
@@ -200,7 +195,7 @@ function startGame(r) {
   r.layout = lay; r.rows = grid.length; r.cols = grid[0].length; r.k = k;
   r.walls = grid.join("").split("").map((ch) => ch === "#");
   r.nums = r.walls.map((w) => (w ? 0 : genNum()));
-  r.tables = new Map(); r.traps = new Set(); r.pizzas = new Set();
+  r.tables = new Map(); r.pizzas = new Set();
   const df = diffOf(k);
   const pr = params(k, df.d);
   r.need = pr.need; r.timeS = pr.timeS;
@@ -209,7 +204,7 @@ function startGame(r) {
   const R = r.rows, C = r.cols;
   const corners = [0, R * C - 1, C - 1, (R - 1) * C];
   const reset = (p) => Object.assign(p, { aim: null, aimN: 0, rem: 0, got: [], cdUntil: 0, stunUntil: 0, scrambleUntil: 0,
-                                          moves: 0, misses: 0, items: [], freeMoves: 0, hiddenUntil: 0, pizzas: 0 });
+                                          moves: 0, misses: 0, items: [], freeMoves: 0, pizzas: 0 });
   reset(r.boss); r.boss.pos = Math.floor(R / 2) * C + Math.floor(C / 2);
   for (let i = 0; i < START_ITEMS; i++) r.boss.items.push(rnd(ITEM_KEYS));
   r.chasers.forEach((p, i) => { reset(p); p.pos = corners[i]; });
@@ -226,7 +221,7 @@ function startGame(r) {
 function spawnPizza(r) {
   const cand = [];
   for (let i = 0; i < r.rows * r.cols; i++) {
-    if (r.walls[i] || r.tables.has(i) || r.pizzas.has(i) || r.traps.has(i)) continue;
+    if (r.walls[i] || r.tables.has(i) || r.pizzas.has(i)) continue;
     if (people(r).some((p) => p.pos === i)) continue;
     if (dist(r, i, r.boss.pos) < 3) continue;
     cand.push(i);
@@ -238,21 +233,18 @@ function onTick(r) {
   const now = Date.now();
   let dirty = false;
   for (const [idx, until] of r.tables) if (now >= until) { r.tables.delete(idx); dirty = true; }
-  if (r.boss.hiddenUntil && now >= r.boss.hiddenUntil) { r.boss.hiddenUntil = 0; dirty = true; log(r, "🫥 大盜現身了!", "skill"); }
   if (now >= r.endsAt) return endGame(r, "time");
   if (dirty) pushState(r);
 }
 function snapFor(r, me) {
   const now = Date.now();
-  const isBoss = me && me.role === "boss";
-  const hidden = now < r.boss.hiddenUntil;
   const b = r.boss;
-  const ppl = [{ id: b.id, role: "boss", name: b.name, pos: hidden && !isBoss ? null : b.pos, online: online(b), stun: now < b.stunUntil }]
+  const ppl = [{ id: b.id, role: "boss", name: b.name, pos: b.pos, online: online(b), stun: now < b.stunUntil }]
     .concat(r.chasers.map((p, i) => ({ id: p.id, role: "chaser", idx: i, name: p.name, pos: p.pos, online: online(p), stun: now < p.stunUntil })));
   const s = {
     t: "state", msLeft: Math.max(0, r.endsAt - now), got: b.pizzas, need: r.need,
     nums: r.nums, tables: [...r.tables.keys()], pizzas: [...r.pizzas],
-    traps: isBoss ? [...r.traps] : [], people: ppl, hiddenMs: hidden ? r.boss.hiddenUntil - now : 0,
+    people: ppl,
   };
   if (me) s.me = { id: me.id, role: me.role, pos: me.pos, aim: me.aim, aimN: me.aimN, rem: me.rem, got: me.got,
                    cdMs: Math.max(0, me.cdUntil - now), stunMs: Math.max(0, me.stunUntil - now),
@@ -314,12 +306,6 @@ function doMove(r, p) {
     if (p.pizzas >= r.need) return endGame(r, "pizza");
     spawnPizza(r);
   }
-  if (p.role === "chaser" && r.traps.has(idx)) {
-    r.traps.delete(idx);
-    p.stunUntil = now + TRAP_STUN;
-    send(p.ws, { t: "fx", kind: "drunk", ms: DRUNK_MS });
-    log(r, `🍺 ${p.name} 踩到啤酒滑倒了!`, "skill");
-  }
   pushState(r);
 }
 function onItem(r, p, slot, target) {
@@ -335,9 +321,6 @@ function onItem(r, p, slot, target) {
     r.tables.set(target, now + TABLE_MS);
     r.chasers.forEach((q) => { if (q.aim === target) { q.aim = null; q.rem = 0; q.got = []; note(q, "🪑 前面被翻桌擋住了!", "bad"); } });
     log(r, "🪑 大盜翻桌了!", "skill");
-  } else if (key === "beer") {
-    r.traps.add(p.pos);
-    note(p, "🍺 啤酒灑好了,店員看不到", "skill");
   } else if (key === "scoot") {
     p.freeMoves += SCOOT_MOVES;
     log(r, `🛵 大盜騎上外送車,接下來 ${SCOOT_MOVES} 步免解題!`, "skill");
@@ -345,9 +328,6 @@ function onItem(r, p, slot, target) {
     const hit = r.chasers.filter((q) => dist(r, q.pos, p.pos) <= CHILI_RANGE);
     hit.forEach((q) => { q.scrambleUntil = now + CHILI_MS; send(q.ws, { t: "fx", kind: "scramble", ms: CHILI_MS }); });
     log(r, hit.length ? `🌶️ 辣椒粉!${hit.map((q) => q.name).join("、")} 的鍵盤亂了` : "🌶️ 大盜灑了辣椒粉…但沒人在附近", "skill");
-  } else if (key === "hide") {
-    p.hiddenUntil = now + HIDE_MS;
-    log(r, `🫥 大盜偽裝成客人,消失了 ${HIDE_MS / 1000} 秒!`, "skill");
   }
   p.items.splice(slot, 1);
   pushState(r);
