@@ -1,0 +1,14 @@
+# Render 一鍵部署藍圖:New → Blueprint → 選這個 repo → Apply
+services:
+  - type: web
+    name: pizza-thief
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
