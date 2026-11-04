@@ -108,11 +108,11 @@ details[open].card summary::after{content:"－"}
 .hud{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:8px 10px 4px}
 .pill{display:flex;align-items:center;gap:4px;background:#fff;border:2.5px solid var(--ol);border-radius:999px;padding:1px 12px;
   font-weight:800;box-shadow:0 3px 0 var(--ol);white-space:nowrap}
-.hud .clock{font-size:22px;min-width:84px;justify-content:center}
+.hud .clock{font-size:22px;min-width:76px;justify-content:center}
 .hud .clock.low{background:var(--tomato);color:#fff;animation:beat 1s infinite}
 @keyframes beat{50%{transform:scale(1.07)}}
 .hud .pz{font-size:18px;flex:1;min-width:0;gap:8px}
-.bar{flex:1;height:10px;border-radius:99px;background:var(--line);overflow:hidden;min-width:30px}
+.bar{flex:1;height:10px;border-radius:99px;background:var(--line);overflow:hidden;min-width:20px}
 .bar i{display:block;height:100%;background:var(--cheese-d);border-radius:99px;transition:width .4s var(--pop)}
 .hud .role{font-size:14px;padding:3px 10px}
 .hud .role.boss{background:var(--c2);color:#fff}
@@ -124,7 +124,7 @@ details[open].card summary::after{content:"－"}
 .k-good{color:var(--basil-d)}.k-bad{color:var(--tomato-d)}.k-skill{color:#8a5ee0}.k-pizza{color:#d98a00}.k-sys{color:var(--dim)}
 
 .mapwrap{flex:1 1 0;min-height:0;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:2px 8px}
-.map{display:grid;gap:3px;background:var(--crust);padding:5px;border-radius:18px;position:relative;border:3px solid var(--ol);box-shadow:0 5px 0 var(--ol)}
+.map{touch-action:none;display:grid;gap:3px;background:var(--crust);padding:5px;border-radius:18px;position:relative;border:3px solid var(--ol);box-shadow:0 5px 0 var(--ol)}
 .cell{position:relative;border-radius:8px;background:var(--cream);display:flex;align-items:center;justify-content:center;
   font-weight:800;color:#9a7a63;cursor:default;transition:background .15s,transform .15s}
 .cell.alt{background:var(--pink)}
@@ -156,31 +156,32 @@ details[open].card summary::after{content:"－"}
 @keyframes dizzy{25%{transform:rotate(-14deg)}75%{transform:rotate(14deg)}}
 .cell.off .who{opacity:.35}
 
-.panel{flex:0 0 auto;display:flex;flex-direction:column;gap:7px;padding:8px 12px 10px;margin-top:6px;
+.panel{flex:0 0 auto;display:flex;flex-direction:column;gap:7px;padding:8px 10px 10px;margin-top:6px;
   border-top:3px solid var(--ol);border-radius:24px 24px 0 0;background:var(--card)}
-.trow{display:flex;align-items:center;gap:8px;min-height:46px}
-.target{flex:1;display:flex;align-items:center;gap:10px;padding:0 4px;min-width:0}
-.target .big{font-size:36px;font-weight:800;line-height:1;background:var(--cheese);border:2.5px solid var(--ol);border-radius:14px;padding:3px 10px 0}
-.target .sm{font-size:13px;color:var(--dim);line-height:1.5;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
-.chip{background:var(--basil);color:#fff;border-radius:8px;padding:0 6px;font-weight:800;font-size:13px;animation:popin .3s var(--pop)}
-.target .hint{flex:1;text-align:center;color:#8a6f5c;font-size:14px;font-weight:800;line-height:1.35}
-.items{flex:0 0 auto;display:flex;gap:6px}
-.item{font:inherit;min-width:62px;border:2.5px solid var(--ol);background:#fff;border-radius:14px;padding:2px 6px;font-size:12px;font-weight:800;
-  cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 3px 0 var(--ol);min-height:46px;line-height:1.1;color:var(--ink)}
-.item .e{font-size:20px}
+.trow{display:flex;align-items:stretch;gap:8px;height:52px}
+.target{flex:1 1 auto;display:flex;align-items:center;gap:8px;padding:0 2px;min-width:0}
+.target .big{font-size:32px;font-weight:800;line-height:1;background:var(--cheese);border:2.5px solid var(--ol);border-radius:14px;padding:4px 9px 1px}
+.target .sm{font-size:13px;color:var(--dim);line-height:1.4;display:flex;flex-wrap:wrap;gap:3px;align-items:center;min-width:0}
+.chip{background:var(--basil);color:#fff;border-radius:8px;padding:0 5px;font-weight:800;font-size:13px;animation:popin .3s var(--pop)}
+.target .hint{flex:1;text-align:center;color:#8a6f5c;font-size:14px;font-weight:800;line-height:1.3}
+.target .hint small{font-size:12px;color:var(--dim)}
+.items{flex:0 0 auto;display:flex;gap:5px}
+.item{font:inherit;min-width:48px;border:2.5px solid var(--ol);background:#fff;border-radius:12px;padding:0 4px;font-size:10px;font-weight:800;
+  cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 3px 0 var(--ol);height:42px;line-height:1.05;color:var(--ink)}
+.item .e{font-size:18px}
 .item:active:not(:disabled){transform:translateY(3px);box-shadow:none}
 .item.on{background:var(--tomato);color:#fff;animation:beat .8s infinite}
 .item:disabled{opacity:.35;border-style:dashed;box-shadow:none}
-.disp{display:flex;align-items:center;justify-content:center;background:#fff;border:2.5px solid var(--line);border-radius:16px;height:44px;transition:background .15s,border-color .15s}
+.disp{flex:0 0 40%;display:flex;align-items:center;justify-content:center;background:#fff;border:2.5px solid var(--line);border-radius:16px;transition:background .1s,border-color .1s}
 .disp .val{font-size:26px;font-weight:800;letter-spacing:3px;text-align:center}
-.disp .val.ph{color:#cdb8a5;font-size:15px;letter-spacing:0;font-weight:700}
+.disp .val.ph{color:#cdb8a5;font-size:14px;letter-spacing:0;font-weight:700}
 .disp.cool{border-color:var(--tomato);background:#fff0ec}
-.disp.cool .val{color:var(--tomato-d)}
-.pad{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:clamp(38px,5.8vh,50px);gap:7px}
-.key{font:inherit;font-size:24px;font-weight:800;border:2.5px solid var(--ol);border-radius:14px;background:#fff;color:var(--ink);
-  box-shadow:0 3px 0 var(--ol);transition:transform .06s,box-shadow .06s,opacity .15s}
-.key:active:not(:disabled){transform:translateY(3px);box-shadow:none}
-.key.go{background:var(--basil);color:#fff;font-size:18px}
+.disp.cool .val{color:var(--tomato-d);font-size:20px;letter-spacing:0}
+.pad{display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:clamp(44px,6.6vh,58px);gap:6px}
+.key{font:inherit;font-size:24px;font-weight:800;border:2.5px solid var(--ol);border-radius:14px;background:#fff;color:var(--ink);padding:0;
+  box-shadow:0 3px 0 var(--ol);transition:transform .04s,box-shadow .04s,opacity .12s;touch-action:none}
+.key:active:not(:disabled),.key.down{transform:translateY(3px);box-shadow:none}
+.key.go{background:var(--basil);color:#fff;font-size:16px}
 .key.bs{background:var(--line);font-size:20px}
 .key:disabled{opacity:.35}
 .key.mixed{background:#ffe6c7;color:var(--tomato-d);animation:wob .45s}
@@ -296,12 +297,12 @@ body.tv .tvside{display:flex;flex:0 0 320px;flex-direction:column;gap:12px;paddi
       <div class="pill clock" id="clock">⏱ 0</div>
       <div class="pill pz"><span id="pzCount">🍕 0/6</span><div class="bar"><i id="pzBar" style="width:0"></i></div></div>
       <div class="pill role" id="roleTag"></div>
+      <div class="items hide" id="items"></div>
     </div>
     <div class="feedline" id="feedline"><span></span></div>
     <div class="mapwrap" id="mapwrap"><div class="map" id="map"></div></div>
     <div class="panel" id="panel">
-      <div class="trow"><div class="target" id="target"></div><div class="items hide" id="items"></div></div>
-      <div class="disp" id="disp"><div class="val ph" id="val"></div></div>
+      <div class="trow"><div class="target" id="target"></div><div class="disp" id="disp"><div class="val ph" id="val"></div></div></div>
       <div class="pad" id="pad"></div>
     </div>
   </div>
@@ -341,6 +342,7 @@ $("name").value = localStorage.getItem("pt_name") || "";
 if (qs.get("join")) $("jcode").value = qs.get("join");
 
 let ws, role = null, code = null, ROWS = 0, COLS = 0, WALLS = [], ITEMS = {}, S = null;
+let seq = 0, opt = null, localCd = 0, lastLocalMiss = 0;   // 預測:先畫結果,伺服器確認後再對齊
 let aiming = false, buf = "", endsAt = 0, cdEnds = 0, placing = -1, mixTimer = null;
 
 /* ---------- 連線 ---------- */
@@ -440,7 +442,7 @@ function countdown(ms){
 function startGame(m){
   ROWS = m.rows; COLS = m.cols; WALLS = m.walls; ITEMS = m.items;
   show("game");
-  buf = ""; drawBuf(); placing = -1; unscramble(); S = null;
+  buf = ""; drawBuf(); placing = -1; unscramble(); S = null; opt = null; localCd = 0;
   drawRole();
   $("tvCode").textContent = code;
   $("items").classList.toggle("hide", role !== "boss");
@@ -454,7 +456,7 @@ function startGame(m){
     d._base = "cell" + ((Math.floor(i / COLS) + i % COLS) % 2 ? " alt" : "");
     d.className = d._base + (WALLS[i] ? " wall" : "");
     d.innerHTML = `<span class="n"></span>`;
-    d.onclick = () => tapCell(i);
+    d.dataset.i = i;
     map.appendChild(d);
   }
   sizeMap();
@@ -462,15 +464,15 @@ function startGame(m){
 function drawRole(){
   const t = $("roleTag");
   t.textContent = role === "boss" ? "🦹 大盜" : role === "chaser" ? "👨‍🍳 店員" : "📺 觀戰";
-  t.className = "pill role " + (role || "");
+  t.className = "pill role " + (role || "") + (role === "boss" ? " hide" : "");   // 大盜那格位置留給道具
 }
 function sizeMap(){
   if (!COLS) return;
   const w = $("mapwrap");
-  const avail = Math.min(w.clientWidth - 16, w.clientHeight - 4);
-  const cs = Math.max(22, Math.floor((avail - 22 - 3 * (COLS - 1)) / COLS));
+  const fw = w.clientWidth - 16 - 16, fh = w.clientHeight - 4 - 16 - 6;   // 扣掉外框、padding、陰影
+  const cs = Math.max(20, Math.floor(Math.min((fw - 3 * (COLS - 1)) / COLS, (fh - 3 * (ROWS - 1)) / ROWS)));
   $("map").style.setProperty("--cs", cs + "px");
-  $("map").style.fontSize = Math.round(cs * (COLS >= 11 ? 0.4 : 0.37)) + "px";
+  $("map").style.fontSize = Math.round(cs * 0.38) + "px";
 }
 addEventListener("resize", sizeMap);
 if (window.ResizeObserver) new ResizeObserver(sizeMap).observe($("mapwrap"));
@@ -478,6 +480,13 @@ const adj = (a, b) => Math.abs(Math.floor(a / COLS) - Math.floor(b / COLS)) + Ma
 
 function render(s){
   S = s;
+  if (s.me){
+    // 伺服器還沒處理完我送出的操作 → 用預測的結果蓋上去,避免畫面跳回舊狀態
+    if (opt && (s.me.ack || 0) < seq){
+      Object.assign(s.me, opt, { got: opt.got.slice() });
+      const mine = s.people.find((q) => q.id === s.me.id); if (mine) mine.pos = opt.pos;
+    } else opt = null;
+  }
   endsAt = Date.now() + s.msLeft;
   $("pzCount").textContent = `🍕 ${s.got}/${s.need}`;
   $("pzBar").style.width = Math.min(100, s.got / s.need * 100) + "%";
@@ -513,7 +522,7 @@ function render(s){
   drawRole();
 
   if (me){
-    cdEnds = Date.now() + Math.max(me.cdMs, me.stunMs);
+    cdEnds = Math.max(localCd, Date.now() + Math.max(me.cdMs, me.stunMs));
     aiming = me.aim !== null && me.aim !== undefined;
     if (!aiming) buf = "";
     drawBuf();
@@ -527,15 +536,15 @@ function render(s){
 function drawTarget(me){
   const t = $("target");
   if (me.aim === null || me.aim === undefined){
-    const goal = role === "boss" ? "去偷 🍕,別被店員抓到" : "走進 🦹 的格子就抓到他";
-    t.innerHTML = `<div class="hint">${placing >= 0 ? "🪑 點紅框的格子放桌子<br><small>再按一次道具取消</small>"
-      : me.freeMoves > 0 ? `🛵 外送車中!點旁邊的格子直接走(剩 ${me.freeMoves} 步)`
-      : `👆 點旁邊發亮的格子<br><small>${goal}</small>`}</div>`;
+    const goal = role === "boss" ? "去偷 🍕,別被抓" : "走進 🦹 的格子就抓到";
+    t.innerHTML = `<div class="hint">${placing >= 0 ? "🪑 點紅框放桌子<br><small>再按道具取消</small>"
+      : me.freeMoves > 0 ? `🛵 直接走!<br><small>還有 ${me.freeMoves} 步免解題</small>`
+      : `👆 點或滑動選格子<br><small>${goal}</small>`}</div>`;
     return;
   }
   const chips = me.got.map((g) => `<span class="chip">÷${g}</span>`).join("");
-  const sm = me.got.length ? `${me.aimN} ${chips} = 剩` : `把 <b style="color:var(--ink)">${me.aimN}</b> 拆到剩 1 就過去`;
-  t.innerHTML = `<div class="sm">${sm}</div><div class="big">${me.rem}</div>`;
+  const sm = me.got.length ? `${me.aimN}${chips}` : `拆到剩 1<br>就走過去`;
+  t.innerHTML = `<div class="big">${me.rem}</div><div class="sm">${sm}</div>`;
 }
 function drawItems(me){
   const slots = [0, 1].map((k) => {
@@ -547,7 +556,7 @@ function drawItems(me){
   const h = slots.join("");
   if ($("items")._h !== h){
     $("items").innerHTML = h; $("items")._h = h;
-    $("items").querySelectorAll("[data-s]").forEach((b) => b.onclick = () => useItem(+b.dataset.s));
+    $("items").querySelectorAll("[data-s]").forEach((b) => b.onpointerdown = (e) => { e.preventDefault(); useItem(+b.dataset.s); });
   }
 }
 function useItem(k){
@@ -564,8 +573,49 @@ function tapCell(i){
     sendMsg({ t:"item", slot: k, target: i });
     return render(S);
   }
-  if (adj(S.me.pos, i) === 1){ buf = ""; drawBuf(); sendMsg({ t:"aim", i }); }
+  const me = S.me;
+  if (adj(me.pos, i) !== 1 || me.aim === i || !walkableHere(i)) return;
+  buf = "";
+  sendMsg({ t:"aim", i, seq: ++seq });
+  predict(() => {
+    if (role === "boss" && me.freeMoves > 0){ me.freeMoves--; me.pos = i; me.aim = null; me.rem = 0; me.got = []; }
+    else { me.aim = i; me.aimN = S.nums[i]; me.rem = me.aimN; me.got = []; }
+  });
 }
+function walkableHere(i){
+  if (WALLS[i] || S.tables.includes(i)) return false;
+  return !S.people.some((q) => q.role === "chaser" && q.pos === i && q.id !== S.me.id);
+}
+function predict(change){
+  change();
+  const me = S.me;
+  opt = { pos: me.pos, aim: me.aim, aimN: me.aimN, rem: me.rem, got: me.got.slice(), freeMoves: me.freeMoves };
+  render(S);
+}
+const isPrime = (n) => { if (n < 2) return false; for (let d = 2; d * d <= n; d++) if (n % d === 0) return false; return true; };
+
+// 地圖手勢:手指一碰到相鄰格就選;往上下左右滑 = 選那個方向的格子
+let gest = null;
+$("map").addEventListener("pointerdown", (e) => {
+  if (!S || !S.me) return;
+  const cell = e.target.closest(".cell");
+  const i = cell ? +cell.dataset.i : -1;
+  gest = { x: e.clientX, y: e.clientY, id: e.pointerId, swiped: false };
+  try { $("map").setPointerCapture(e.pointerId); } catch {}
+  if (i >= 0 && (placing >= 0 || adj(S.me.pos, i) === 1)) { gest.swiped = placing >= 0; tapCell(i); }
+});
+$("map").addEventListener("pointermove", (e) => {
+  if (!gest || gest.swiped || e.pointerId !== gest.id || !S || !S.me) return;
+  const dx = e.clientX - gest.x, dy = e.clientY - gest.y;
+  if (Math.hypot(dx, dy) < 22) return;
+  gest.swiped = true;
+  const p = S.me.pos;
+  const to = Math.abs(dx) > Math.abs(dy) ? p + Math.sign(dx) : p + Math.sign(dy) * COLS;
+  if (to >= 0 && to < ROWS * COLS && adj(p, to) === 1) tapCell(to);
+});
+const endGest = () => (gest = null);
+$("map").addEventListener("pointerup", endGest);
+$("map").addEventListener("pointercancel", endGest);
 function drawTvSide(s){
   const rows = s.people.map((p) => p.role === "boss"
     ? `<div class="prow"><span class="ava boss">🦹</span>${esc(p.name)}<span class="x">🍕 ${s.got}/${s.need}</span></div>`
@@ -574,11 +624,15 @@ function drawTvSide(s){
 }
 
 /* ---------- 鍵盤 ---------- */
-const KEYS = ["1","2","3","4","5","6","7","8","9","⌫","0","送出"];
-const DIGIT_POS = [0,1,2,3,4,5,6,7,8,10];
+const KEYS = ["1","2","3","4","5","⌫","6","7","8","9","0","送出"];
+const DIGIT_POS = [0,1,2,3,4,6,7,8,9,10];
 const DIGITS = ["1","2","3","4","5","6","7","8","9","0"];
 $("pad").innerHTML = KEYS.map((k) => `<button class="key${k === "送出" ? " go" : k === "⌫" ? " bs" : ""}" data-k="${k}">${k}</button>`).join("");
-[...$("pad").children].forEach((b) => b.onclick = () => tap(b.dataset.k));
+// 手指一碰到就算(不用等放開),體感快很多
+[...$("pad").children].forEach((b) => {
+  b.onpointerdown = (e) => { e.preventDefault(); if (b.disabled) return; b.classList.add("down"); tap(b.dataset.k); };
+  b.onpointerup = b.onpointerleave = b.onpointercancel = () => b.classList.remove("down");
+});
 function setKeys(order){
   const btns = [...$("pad").children];
   DIGIT_POS.forEach((pos, k) => { const b = btns[pos]; b.dataset.k = order[k]; b.textContent = order[k]; b.classList.toggle("mixed", order[k] !== DIGITS[k]); });
@@ -604,13 +658,25 @@ function tap(k){
 function drawBuf(){
   if (Date.now() < cdEnds) return;
   const v = $("val");
-  v.textContent = buf || (aiming ? "輸入一個質因數,按送出" : "先選一格要去的地方");
+  v.textContent = buf || (aiming ? "打一個質因數" : "先選格子");
   v.classList.toggle("ph", !buf);
 }
 function submit(){
   const v = parseInt(buf, 10);
   buf = ""; drawBuf();
-  if (Number.isInteger(v) && v >= 2) sendMsg({ t:"guess", v });
+  if (!Number.isInteger(v) || v < 2 || !S || !S.me || !aiming) return;
+  sendMsg({ t:"guess", v, seq: ++seq });
+  const me = S.me;
+  if (!isPrime(v) || me.rem % v !== 0){          // 打錯:馬上暈、馬上震,不等伺服器
+    localCd = Date.now() + 1000; cdEnds = localCd; lastLocalMiss = Date.now();
+    flash(!isPrime(v) ? `✗ ${v} 不是質數` : `✗ ${v} 除不盡 ${me.rem}`, "bad");
+    missFx();
+    return predict(() => {});
+  }
+  predict(() => {
+    me.rem /= v; me.got.push(v);
+    if (me.rem === 1){ me.pos = me.aim; me.aim = null; me.rem = 0; me.got = []; }
+  });
 }
 // 桌機測試:數字/Enter/Backspace,方向鍵或 WASD 選格子
 addEventListener("keydown", (e) => {
@@ -628,8 +694,12 @@ addEventListener("keydown", (e) => {
 
 /* ---------- 特效 ---------- */
 function fx(m){
-  if (m.kind === "miss"){ $("disp").classList.remove("shake"); void $("disp").offsetWidth; $("disp").classList.add("shake"); if (navigator.vibrate) navigator.vibrate(120); }
+  if (m.kind === "miss" && Date.now() - lastLocalMiss > 1500) missFx();   // 自己已經先震過就不再震一次
   if (m.kind === "scramble") scramble(m.ms);
+}
+function missFx(){
+  $("disp").classList.remove("shake"); void $("disp").offsetWidth; $("disp").classList.add("shake");
+  if (navigator.vibrate) navigator.vibrate(120);
 }
 function flash(text, kind){
   const fl = document.createElement("span");
@@ -680,7 +750,7 @@ setInterval(() => {
   $("clock").classList.toggle("low", left <= 15);
   const cd = cdEnds - Date.now(), on = cd > 0;
   $("disp").classList.toggle("cool", on);
-  if (on){ $("val").textContent = `💫 暈 ${(cd / 1000).toFixed(1)}s`; $("val").classList.remove("ph"); }
+  if (on){ $("val").textContent = `💫 ${(cd / 1000).toFixed(1)}s`; $("val").classList.remove("ph"); }
   else if ($("val").textContent.startsWith("💫")) drawBuf();
   [...$("pad").children].forEach((b) => (b.disabled = on || !aiming));
 }, 100);

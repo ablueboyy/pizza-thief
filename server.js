@@ -48,30 +48,35 @@ function params(k, d) {
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
 // 地圖:# = 桌子/烤爐(永久障礙)。1~2 個店員用小地圖,3~4 個用大地圖。
+// 直式長方形:手機是直的,寬度才是瓶頸,所以欄少列多、格子才會大
 const LAYOUTS = {
-  small: [            // 9×9
-    ".........",
-    ".##...##.",
-    ".#.....#.",
-    "...#.#...",
-    ".........",
-    "...#.#...",
-    ".#.....#.",
-    ".##...##.",
-    ".........",
+  small: [            // 7 欄 × 11 列
+    ".......",
+    ".##.##.",
+    ".......",
+    ".#...#.",
+    "...#...",
+    ".#...#.",
+    "...#...",
+    ".#...#.",
+    ".......",
+    ".##.##.",
+    ".......",
   ],
-  big: [              // 11×11
-    "...........",
-    ".##..#..##.",
-    ".#.......#.",
-    "...##.##...",
-    "...........",
-    ".#..#.#..#.",
-    "...........",
-    "...##.##...",
-    ".#.......#.",
-    ".##..#..##.",
-    "...........",
+  big: [              // 9 欄 × 13 列
+    ".........",
+    ".##...##.",
+    ".#.....#.",
+    "...#.#...",
+    ".........",
+    ".#..#..#.",
+    ".........",
+    ".#..#..#.",
+    ".........",
+    "...#.#...",
+    ".#.....#.",
+    ".##...##.",
+    ".........",
   ],
 };
 const PIZZAS_ON = { small: 3, big: 4 }; // 場上同時有幾片披薩
@@ -252,7 +257,7 @@ function snapFor(r, me) {
   };
   if (me) s.me = { id: me.id, role: me.role, pos: me.pos, aim: me.aim, aimN: me.aimN, rem: me.rem, got: me.got,
                    cdMs: Math.max(0, me.cdUntil - now), stunMs: Math.max(0, me.stunUntil - now),
-                   scrambleMs: Math.max(0, me.scrambleUntil - now), items: me.items, freeMoves: me.freeMoves };
+                   scrambleMs: Math.max(0, me.scrambleUntil - now), items: me.items, freeMoves: me.freeMoves, ack: me.ack || 0 };
   return s;
 }
 function pushState(r) {
@@ -261,6 +266,8 @@ function pushState(r) {
   if (r.screens.length) { const s = snapFor(r, null); r.screens.forEach((w) => send(w, s)); }
 }
 
+// 手機會先「預測」結果畫出來;seq 讓它知道哪些操作伺服器已經處理過了
+function ackSeq(p, seq) { if (Number.isInteger(seq)) p.ack = seq; }
 function onAim(r, p, idx) {
   if (r.phase !== "playing" || !Number.isInteger(idx)) return;
   if (p.aim === idx) return;                                   // 同一格再點一次:保留進度
@@ -431,8 +438,8 @@ wss.on("connection", (ws) => {
         if (!isBoss || r.phase !== "lobby") return;
         { const q = r.chasers[m.i]; if (q) { r.chasers.splice(m.i, 1); send(q.ws, { t: "err", msg: "你被請出房間了", fatal: true }); q.ws._room = null; } }
         return pushLobby(r);
-      case "aim":   return onAim(r, me, m.i);
-      case "guess": return onGuess(r, me, m.v);
+      case "aim":   ackSeq(me, m.seq); return onAim(r, me, m.i);
+      case "guess": ackSeq(me, m.seq); return onGuess(r, me, m.v);
       case "item":  return onItem(r, me, m.slot, m.target);
     }
   });
