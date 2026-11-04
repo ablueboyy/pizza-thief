@@ -49,28 +49,32 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
 // 地圖:# = 桌子/烤爐(永久障礙)。1~2 個店員用小地圖,3~4 個用大地圖。
 const LAYOUTS = {
-  small: [
-    ".......",
-    ".#...#.",
-    "...#...",
-    ".......",
-    "...#...",
-    ".#...#.",
-    ".......",
+  small: [            // 9×9
+    ".........",
+    ".##...##.",
+    ".#.....#.",
+    "...#.#...",
+    ".........",
+    "...#.#...",
+    ".#.....#.",
+    ".##...##.",
+    ".........",
   ],
-  big: [
-    ".........",
-    ".##...##.",
-    ".........",
-    "...#.#...",
-    ".........",
-    "...#.#...",
-    ".........",
-    ".##...##.",
-    ".........",
+  big: [              // 11×11
+    "...........",
+    ".##..#..##.",
+    ".#.......#.",
+    "...##.##...",
+    "...........",
+    ".#..#.#..#.",
+    "...........",
+    "...##.##...",
+    ".#.......#.",
+    ".##..#..##.",
+    "...........",
   ],
 };
-const PIZZAS_ON = { small: 2, big: 3 }; // 場上同時有幾片披薩
+const PIZZAS_ON = { small: 3, big: 4 }; // 場上同時有幾片披薩
 
 // ================= 出題(格子上的數字) =================
 function factorize(n) {
@@ -239,8 +243,8 @@ function onTick(r) {
 function snapFor(r, me) {
   const now = Date.now();
   const b = r.boss;
-  const ppl = [{ id: b.id, role: "boss", name: b.name, pos: b.pos, online: online(b), stun: now < b.stunUntil }]
-    .concat(r.chasers.map((p, i) => ({ id: p.id, role: "chaser", idx: i, name: p.name, pos: p.pos, online: online(p), stun: now < p.stunUntil })));
+  const ppl = [{ id: b.id, role: "boss", name: b.name, pos: b.pos, online: online(b), stun: now < Math.max(b.stunUntil, b.cdUntil) }]
+    .concat(r.chasers.map((p, i) => ({ id: p.id, role: "chaser", idx: i, name: p.name, pos: p.pos, online: online(p), stun: now < Math.max(p.stunUntil, p.cdUntil) })));
   const s = {
     t: "state", msLeft: Math.max(0, r.endsAt - now), got: b.pizzas, need: r.need,
     nums: r.nums, tables: [...r.tables.keys()], pizzas: [...r.pizzas],
@@ -277,6 +281,7 @@ function onGuess(r, p, v) {
     p.cdUntil = now + MISS_CD; p.misses++;
     note(p, !isPrime(v) ? `✗ ${v} 不是質數` : `✗ ${v} 除不盡 ${p.rem}`, "bad");
     send(p.ws, { t: "fx", kind: "miss" });
+    setTimeout(() => pushState(r), MISS_CD + 30);  // 暈完再推一次,讓別人畫面上的暈眩圈消失
     return pushState(r);
   }
   p.rem /= v; p.got.push(v);
@@ -441,7 +446,7 @@ wss.on("connection", (ws) => {
     if (!p) return;
     // 遊戲中斷線先保留位置(手機螢幕關掉很常見),重新打開網頁會自動接回去
     if (r.phase === "lobby" && p.role === "chaser") r.chasers = r.chasers.filter((q) => q !== p);
-    if (r.phase === "lobby" || r.phase === "over") pushLobby(r);
+    if (r.phase === "lobby") pushLobby(r);   // 結算畫面時不要推大廳,否則大家的結算會被瞬間蓋掉
     else if (r.phase === "playing") { log(r, `📴 ${p.name} 斷線了`, "bad"); pushState(r); }
   });
 });

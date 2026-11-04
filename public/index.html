@@ -3,158 +3,221 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#fff8ef">
+<meta name="theme-color" content="#fff4e4">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>披薩大盜</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Huninn&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#fff8ef; --card:#fff; --ink:#3b2418; --dim:#a89383; --line:#f0e3d4;
-  --tomato:#e8553f; --cheese:#ffc94a; --basil:#4fb37c; --crust:#d9a066; --floor:#fdf1e2; --floor2:#f8e7d2;
-  --c0:#ff7aa2; --c1:#4ea8e8; --c2:#9b6fe0; --c3:#25b5a5;
+  --bg:#fff4e4; --card:#fffdf8; --ink:#4a2c1d; --ol:#4a2c1d; --dim:#a8907d; --line:#f1dcc6;
+  --tomato:#ff6b57; --tomato-d:#e0503d; --cheese:#ffd15c; --cheese-d:#f0b429; --basil:#5cc98a; --basil-d:#3fa86d;
+  --crust:#f2b872; --pink:#ffe0d8; --cream:#fffaf0;
+  --c0:#ff8fb1; --c1:#5cb8ff; --c2:#b48cff; --c3:#3fd0bd;
+  --pop:cubic-bezier(.34,1.56,.64,1);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body,.btn,.key,.del,.cell,.item{touch-action:manipulation}
-.btn,.key,.del,.cell,.item{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+html,body,.btn,.key,.cell,.item{touch-action:manipulation}
+.btn,.key,.cell,.item{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 html,body{height:100%;height:100dvh;overscroll-behavior:none}
-body{background:var(--bg);color:var(--ink);
-  font-family:"Baloo 2","Zen Maru Gothic","PingFang TC","Microsoft JhengHei",sans-serif;font-weight:500;
+body{color:var(--ink);
+  background:radial-gradient(circle,rgba(255,107,87,.12) 2.5px,transparent 3px) 0 0/26px 26px,var(--bg);
+  font-family:"Baloo 2","Huninn","Zen Maru Gothic","PingFang TC","Microsoft JhengHei",sans-serif;font-weight:500;
   -webkit-font-smoothing:antialiased;display:flex;flex-direction:column;
   padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
 .hide{display:none !important}
 .screen{flex:1;min-height:0;display:flex;flex-direction:column}
-.mid{justify-content:center;align-items:center;padding:20px;overflow-y:auto}
-.sheet{width:100%;max-width:440px}
-.stack>*+*{margin-top:10px}
-h1{font-size:34px;font-weight:800;text-align:center;line-height:1.1}
-h1 .sub{display:block;font-size:12px;color:var(--dim);font-weight:500;letter-spacing:5px;margin-top:4px}
-.soft{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:14px 16px}
-input{font:inherit;font-size:17px;width:100%;padding:13px 16px;text-align:center;border:2px solid var(--line);
-  border-radius:16px;background:#fff;color:var(--ink);outline:none}
+.mid{align-items:center;padding:22px 18px;overflow-y:auto}
+.mid>*{margin:auto 0}
+.sheet{width:100%;max-width:420px}
+.stack>*+*{margin-top:12px}
+a{color:var(--tomato-d);font-weight:700}
+
+/* 貼紙風元件 */
+.card{background:var(--card);border:2.5px solid var(--ol);border-radius:22px;padding:14px 16px;box-shadow:0 4px 0 var(--ol)}
+.label{font-size:13px;font-weight:800;color:var(--dim);letter-spacing:1px;margin-bottom:8px}
+input{font:inherit;font-weight:700;font-size:18px;width:100%;padding:11px 14px;text-align:center;border:2.5px solid var(--line);
+  border-radius:16px;background:#fff;color:var(--ink);outline:none;transition:border-color .15s}
 input:focus{border-color:var(--tomato)}
-input::placeholder{color:#d8c9bb}
-.btn{font:inherit;font-weight:700;font-size:17px;border:none;border-radius:16px;padding:14px 18px;background:#fff;
-  color:var(--ink);cursor:pointer;width:100%;box-shadow:0 3px 0 var(--line);transition:transform .06s,box-shadow .06s}
-.btn:active:not(:disabled){transform:translateY(3px);box-shadow:none}
-.btn:disabled{opacity:.42;cursor:default}
-.btn.red{background:var(--tomato);color:#fff;box-shadow:0 3px 0 #c4402d}
-.btn.green{background:var(--basil);color:#fff;box-shadow:0 3px 0 #3b9465}
-.btn.ghost{border:2px solid var(--line)}
-.btn.sm{font-size:14px;padding:8px 12px;width:auto}
+input::placeholder{color:#d9c6b4;font-weight:500}
+.btn{font:inherit;font-weight:800;font-size:17px;border:2.5px solid var(--ol);border-radius:16px;padding:11px 16px;background:#fff;
+  color:var(--ink);cursor:pointer;width:100%;box-shadow:0 4px 0 var(--ol);transition:transform .08s,box-shadow .08s}
+.btn:active:not(:disabled){transform:translateY(4px);box-shadow:0 0 0 var(--ol)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.red{background:var(--tomato);color:#fff}
+.btn.green{background:var(--basil);color:#fff}
+.btn.yellow{background:var(--cheese)}
+.btn.sm{font-size:20px;padding:4px 0;width:46px;flex:0 0 46px}
 .rowg{display:flex;gap:10px}.rowg>*{flex:1}
-.note{font-size:13px;color:var(--dim);text-align:center;line-height:1.75}
-.err{color:var(--tomato);font-size:14px;text-align:center;min-height:20px;font-weight:700}
-.rules{font-size:13.5px;line-height:1.95;color:#7a6455}
-.rules b{color:var(--ink)}
-a{color:var(--tomato)}
+.note{font-size:13px;color:var(--dim);text-align:center;line-height:1.7}
+.err{color:var(--tomato-d);font-size:14px;text-align:center;min-height:20px;font-weight:800}
+.wobble{animation:wobble 2.6s ease-in-out infinite}
+@keyframes wobble{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg) translateY(-4px)}}
+.popin{animation:popin .45s var(--pop) both}
+@keyframes popin{from{transform:scale(.6);opacity:0}}
+
+/* ---- 首頁 ---- */
+.hero{text-align:center}
+.hero .logo{font-size:72px;line-height:1;display:inline-block;filter:drop-shadow(0 4px 0 rgba(74,44,29,.18))}
+.hero h1{font-size:38px;font-weight:800;line-height:1.05;margin-top:6px;letter-spacing:2px}
+.hero .sub{font-size:12px;color:var(--tomato-d);font-weight:800;letter-spacing:6px;margin-top:2px}
+.roles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.role-card{display:flex;flex-direction:column;gap:8px;text-align:center}
+.role-card .face{font-size:40px;line-height:1}
+.role-card .t{font-size:18px;font-weight:800}
+.role-card .d{font-size:12px;color:var(--dim);line-height:1.45;flex:1}
+.role-card.chef{background:#fff1ec}
+.role-card.thief{background:#f2ecff}
+.role-card input{font-size:20px;padding:8px;letter-spacing:6px}
+details.card summary{font-weight:800;cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px}
+details.card summary::-webkit-details-marker{display:none}
+details.card summary::after{content:"＋";margin-left:auto;color:var(--dim)}
+details[open].card summary::after{content:"－"}
+.steps{list-style:none;margin-top:10px;display:flex;flex-direction:column;gap:9px;font-size:14px;line-height:1.55;color:#7a6050}
+.steps li{display:flex;gap:10px;align-items:flex-start}
+.steps .ic{flex:0 0 30px;height:30px;border-radius:50%;background:var(--pink);display:flex;align-items:center;justify-content:center;font-size:16px}
+.steps b{color:var(--ink)}
+.eg{display:inline-block;background:var(--cheese);border-radius:8px;padding:0 6px;font-weight:800;color:var(--ink)}
 
 /* ---- 大廳 ---- */
-.code{font-size:52px;font-weight:800;letter-spacing:10px;text-align:center;color:var(--tomato);line-height:1}
-.qr{width:170px;height:170px;margin:0 auto;display:block;border-radius:14px;border:2px solid var(--line);background:#fff}
+.ticket{text-align:center;background:var(--cheese);position:relative}
+.ticket .label{color:var(--ink);opacity:.6;margin-bottom:0}
+.code{font-size:46px;font-weight:800;letter-spacing:10px;line-height:1.05;color:var(--ink)}
+.qr{width:132px;height:132px;margin:6px auto 2px;display:block;border-radius:14px;border:2.5px solid var(--ol);background:#fff;padding:4px}
 .plist{display:flex;flex-direction:column;gap:6px}
-.prow{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:14px;background:#fff;border:2px solid var(--line);font-weight:700}
-.prow .em{font-size:22px}
-.prow .x{margin-left:auto;font-size:13px;color:var(--dim);border:none;background:none;cursor:pointer;font:inherit}
+.prow{display:flex;align-items:center;gap:10px;padding:5px 12px 5px 6px;border-radius:16px;background:#fff;border:2.5px solid var(--line);font-weight:800}
+.ava{flex:0 0 32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;border:2.5px solid var(--ol);background:#fff}
+.ava.boss{background:var(--c2)}
+.prow .x{margin-left:auto;font-size:13px;color:var(--dim);border:none;background:none;cursor:pointer;font:inherit;font-weight:700}
 .prow.off{opacity:.45}
-.dot{width:12px;height:12px;border-radius:50%;flex:0 0 12px}
+.prow.empty{border-style:dashed;background:transparent;color:var(--dim);font-weight:700}
+.prow.empty .ava{border:2.5px dashed var(--line);background:transparent}
 .diff{display:flex;align-items:center;gap:8px}
-.diff .v{flex:1;text-align:center;font-size:14px;line-height:1.5}
-.diff .v b{font-size:20px}
-.diff .btn{flex:0 0 46px;padding:8px 0}
+.diff .v{flex:1;text-align:center;font-size:14px;line-height:1.55}
+.diff .v b{font-size:22px}
+
+/* ---- 倒數 ---- */
+#count{justify-content:center;align-items:center}
+#count .num{font-size:140px;font-weight:800;color:var(--tomato);line-height:1;text-shadow:0 6px 0 var(--ol)}
+#count .num.tick{animation:popin .5s var(--pop)}
+#count .note{font-size:20px;font-weight:800;color:var(--ink)}
 
 /* ---- 遊戲 ---- */
 #game{padding:0}
 .hud{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:8px 10px 4px}
-.hud .clock{font-size:26px;font-weight:800;min-width:64px}
-.hud .clock.low{color:var(--tomato)}
-.hud .pz{font-size:20px;font-weight:800}
-.hud .role{margin-left:auto;font-size:13px;font-weight:700;padding:3px 10px;border-radius:12px;background:#fff;border:2px solid var(--line)}
-.feedline{flex:0 0 auto;height:22px;font-size:13px;font-weight:700;text-align:center;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding:0 10px}
-.k-good{color:var(--basil)}.k-bad{color:var(--tomato)}.k-skill{color:#9b6fe0}.k-pizza{color:#d98a00}.k-sys{color:var(--dim)}
+.pill{display:flex;align-items:center;gap:4px;background:#fff;border:2.5px solid var(--ol);border-radius:999px;padding:1px 12px;
+  font-weight:800;box-shadow:0 3px 0 var(--ol);white-space:nowrap}
+.hud .clock{font-size:22px;min-width:84px;justify-content:center}
+.hud .clock.low{background:var(--tomato);color:#fff;animation:beat 1s infinite}
+@keyframes beat{50%{transform:scale(1.07)}}
+.hud .pz{font-size:18px;flex:1;min-width:0;gap:8px}
+.bar{flex:1;height:10px;border-radius:99px;background:var(--line);overflow:hidden;min-width:30px}
+.bar i{display:block;height:100%;background:var(--cheese-d);border-radius:99px;transition:width .4s var(--pop)}
+.hud .role{font-size:14px;padding:3px 10px}
+.hud .role.boss{background:var(--c2);color:#fff}
+.hud .role.chaser{background:var(--tomato);color:#fff}
+.feedline{flex:0 0 auto;height:26px;display:flex;justify-content:center;align-items:center;padding:0 10px}
+.feedline span{font-size:13px;font-weight:800;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
+  background:#fff;border-radius:99px;padding:1px 12px;border:2px solid currentColor;animation:popin .35s var(--pop)}
+.feedline span:empty{display:none}
+.k-good{color:var(--basil-d)}.k-bad{color:var(--tomato-d)}.k-skill{color:#8a5ee0}.k-pizza{color:#d98a00}.k-sys{color:var(--dim)}
 
 .mapwrap{flex:1 1 0;min-height:0;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:2px 8px}
-.map{display:grid;gap:3px;background:var(--crust);padding:4px;border-radius:14px;position:relative}
-.cell{position:relative;border-radius:7px;background:var(--floor);display:flex;align-items:center;justify-content:center;
-  font-weight:800;color:#8a6d58;overflow:hidden;cursor:default}
-.cell:nth-child(odd){background:var(--floor2)}
+.map{display:grid;gap:3px;background:var(--crust);padding:5px;border-radius:18px;position:relative;border:3px solid var(--ol);box-shadow:0 5px 0 var(--ol)}
+.cell{position:relative;border-radius:8px;background:var(--cream);display:flex;align-items:center;justify-content:center;
+  font-weight:800;color:#9a7a63;cursor:default;transition:background .15s,transform .15s}
+.cell.alt{background:var(--pink)}
 .cell .n{position:relative;z-index:1;line-height:1}
-.cell.wall{background:#7a4b2f !important;color:transparent}
-.cell.wall::after{content:"🪵";font-size:.55em;opacity:.55}
-.cell.tbl{background:#9a6242 !important}
-.cell.tbl .n{opacity:.15}
-.cell.tbl::after{content:"🪑";position:absolute;font-size:.7em}
-.cell.can{background:#fff3b8 !important;box-shadow:inset 0 0 0 2px var(--cheese);cursor:pointer;color:var(--ink)}
-.cell.aim{background:#ffe07a !important;box-shadow:inset 0 0 0 3px #e09b00;color:var(--ink)}
-.cell.place{background:#ffe0d8 !important;box-shadow:inset 0 0 0 2px var(--tomato);cursor:pointer}
-.cell .pz{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2.3em;animation:bob 1.4s ease-in-out infinite}
-@keyframes bob{50%{transform:translateY(-6%) rotate(8deg)}}
-.cell.haspz{background:#ffe9b0 !important}
+.cell.wall{background:repeating-linear-gradient(0deg,#a8653f 0 30%,#8d5133 30% 34%) !important;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18);color:transparent}
+.cell.wall::after{content:"🔥";font-size:.6em;opacity:.8}
+.cell.tbl{background:#c98a5c !important}
+.cell.tbl .n{opacity:0}
+.cell.tbl::after{content:"🪑";position:absolute;font-size:1.4em;animation:popin .4s var(--pop)}
+.cell.can{background:#fff1b0 !important;box-shadow:inset 0 0 0 2.5px var(--cheese-d);cursor:pointer;color:var(--ink)}
+.cell.can:active{transform:scale(.92)}
+.cell.catch{background:#ffd1c9 !important;box-shadow:inset 0 0 0 3px var(--tomato);cursor:pointer;animation:catchme .8s infinite}
+@keyframes catchme{50%{box-shadow:inset 0 0 0 5px var(--tomato)}}
+.cell.aim{background:var(--cheese) !important;box-shadow:inset 0 0 0 3px var(--ol);color:var(--ink);transform:scale(1.05);z-index:4}
+.cell.place{background:#ffe0d8 !important;box-shadow:inset 0 0 0 2.5px var(--tomato);cursor:pointer}
+.cell .pz{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2.1em;animation:bob 1.4s ease-in-out infinite;opacity:.9}
+@keyframes bob{50%{transform:translateY(-7%) rotate(10deg)}}
 .cell.haspz .n{z-index:3;text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 3px #fff;color:var(--ink)}
-.cell .who{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2.2em;z-index:2}
-.cell.occ .n{position:absolute;bottom:1px;right:2px;font-size:.75em;z-index:3;background:rgba(255,255,255,.85);border-radius:4px;padding:0 2px}
-.cell .tag{position:absolute;top:1px;left:1px;font-size:.62em;font-weight:800;color:#fff;border-radius:4px;padding:0 3px;z-index:3;line-height:1.4}
-.cell.me{animation:pulse 1.1s infinite}
-@keyframes pulse{0%,100%{box-shadow:inset 0 0 0 3px rgba(232,85,63,.9)}50%{box-shadow:inset 0 0 0 3px rgba(232,85,63,.2)}}
-.cell.stunned .who{animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
+.cell .who{position:absolute;inset:9%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.75em;z-index:2;
+  border:2.5px solid var(--ol);background:#fff;box-shadow:0 2px 0 var(--ol);animation:popin .3s var(--pop)}
+.cell .who.boss{background:var(--c2)}
+.cell.occ .n{position:absolute;bottom:-3px;right:-3px;font-size:.62em;z-index:3;background:#fff;border:2px solid var(--ol);border-radius:7px;padding:0 3px}
+.cell .tag{position:absolute;top:-4px;left:50%;transform:translateX(-50%);font-size:.55em;font-weight:800;color:#fff;border-radius:6px;padding:0 4px;
+  z-index:5;line-height:1.35;border:1.5px solid var(--ol);white-space:nowrap}
+.cell.me .who{box-shadow:0 0 0 3px #fff,0 0 0 6px var(--tomato);animation:mering 1.2s ease-in-out infinite}
+@keyframes mering{50%{box-shadow:0 0 0 3px #fff,0 0 0 8px rgba(255,107,87,.35)}}
+.cell.stunned .who{animation:dizzy .9s ease-in-out infinite}
+.cell.stunned::before{content:"💫";position:absolute;top:-8%;right:-6%;font-size:.9em;z-index:6}
+@keyframes dizzy{25%{transform:rotate(-14deg)}75%{transform:rotate(14deg)}}
 .cell.off .who{opacity:.35}
 
-.panel{flex:0 0 auto;display:flex;flex-direction:column;gap:6px;padding:6px 10px 8px;border-top:2px solid var(--line);background:#fffaf3}
-.trow{display:flex;align-items:center;gap:8px;min-height:44px}
-.target{flex:1;display:flex;align-items:center;gap:10px;padding:0 6px;min-width:0}
-.target .big{font-size:34px;font-weight:800;line-height:1}
-.target .sm{font-size:13px;color:var(--dim);line-height:1.35}
-.target .sm b{color:var(--basil)}
-.target .hint{flex:1;text-align:center;color:var(--dim);font-size:14px;font-weight:700}
+.panel{flex:0 0 auto;display:flex;flex-direction:column;gap:7px;padding:8px 12px 10px;margin-top:6px;
+  border-top:3px solid var(--ol);border-radius:24px 24px 0 0;background:var(--card)}
+.trow{display:flex;align-items:center;gap:8px;min-height:46px}
+.target{flex:1;display:flex;align-items:center;gap:10px;padding:0 4px;min-width:0}
+.target .big{font-size:36px;font-weight:800;line-height:1;background:var(--cheese);border:2.5px solid var(--ol);border-radius:14px;padding:3px 10px 0}
+.target .sm{font-size:13px;color:var(--dim);line-height:1.5;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.chip{background:var(--basil);color:#fff;border-radius:8px;padding:0 6px;font-weight:800;font-size:13px;animation:popin .3s var(--pop)}
+.target .hint{flex:1;text-align:center;color:#8a6f5c;font-size:14px;font-weight:800;line-height:1.35}
 .items{flex:0 0 auto;display:flex;gap:6px}
-.item{font:inherit;min-width:64px;border:2px solid var(--line);background:#fff;border-radius:14px;padding:6px 4px;font-size:13px;font-weight:700;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;box-shadow:0 2px 0 var(--line);min-height:40px}
+.item{font:inherit;min-width:62px;border:2.5px solid var(--ol);background:#fff;border-radius:14px;padding:2px 6px;font-size:12px;font-weight:800;
+  cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 3px 0 var(--ol);min-height:46px;line-height:1.1;color:var(--ink)}
 .item .e{font-size:20px}
-.item.on{border-color:var(--tomato);background:#fff0ec}
-.item:disabled{opacity:.35}
-.disp{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid var(--line);border-radius:16px;padding:0 6px 0 16px;height:44px}
-.disp .val{flex:1;font-size:26px;font-weight:800;letter-spacing:3px;text-align:center}
-.disp .val.ph{color:#d8c9bb;font-size:15px;letter-spacing:0;font-weight:500}
-.disp.cool{border-color:var(--tomato);background:#fff3f0}
-.del{flex:0 0 46px;height:38px;border:none;background:transparent;font-size:20px;color:var(--dim);border-radius:12px}
-.pad{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:clamp(36px,5.6vh,48px);gap:6px}
-.key{font:inherit;font-size:24px;font-weight:700;border:none;border-radius:14px;background:#fff;color:var(--ink);
-  box-shadow:0 3px 0 var(--line);transition:transform .05s,box-shadow .05s}
-.key:active{transform:translateY(3px);box-shadow:none}
-.key.go{background:var(--basil);color:#fff;font-size:18px;box-shadow:0 3px 0 #3b9465}
-.key:disabled{opacity:.4}
-.key.mixed{background:#fff0ec;color:var(--tomato);animation:wob .45s}
-@keyframes wob{0%{transform:rotate(-7deg) scale(.86)}55%{transform:rotate(5deg) scale(1.03)}100%{transform:none}}
+.item:active:not(:disabled){transform:translateY(3px);box-shadow:none}
+.item.on{background:var(--tomato);color:#fff;animation:beat .8s infinite}
+.item:disabled{opacity:.35;border-style:dashed;box-shadow:none}
+.disp{display:flex;align-items:center;justify-content:center;background:#fff;border:2.5px solid var(--line);border-radius:16px;height:44px;transition:background .15s,border-color .15s}
+.disp .val{font-size:26px;font-weight:800;letter-spacing:3px;text-align:center}
+.disp .val.ph{color:#cdb8a5;font-size:15px;letter-spacing:0;font-weight:700}
+.disp.cool{border-color:var(--tomato);background:#fff0ec}
+.disp.cool .val{color:var(--tomato-d)}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:clamp(38px,5.8vh,50px);gap:7px}
+.key{font:inherit;font-size:24px;font-weight:800;border:2.5px solid var(--ol);border-radius:14px;background:#fff;color:var(--ink);
+  box-shadow:0 3px 0 var(--ol);transition:transform .06s,box-shadow .06s,opacity .15s}
+.key:active:not(:disabled){transform:translateY(3px);box-shadow:none}
+.key.go{background:var(--basil);color:#fff;font-size:18px}
+.key.bs{background:var(--line);font-size:20px}
+.key:disabled{opacity:.35}
+.key.mixed{background:#ffe6c7;color:var(--tomato-d);animation:wob .45s}
+@keyframes wob{0%{transform:rotate(-9deg) scale(.86)}55%{transform:rotate(5deg) scale(1.04)}100%{transform:none}}
 .shake{animation:shk .3s}
-@keyframes shk{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
-#stunbox{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%);z-index:50;background:rgba(59,36,24,.88);color:#fff;
-  font-size:22px;font-weight:800;padding:14px 22px;border-radius:18px;pointer-events:none;text-align:center}
+@keyframes shk{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
 
 /* ---- 大螢幕 ---- */
 body.tv .panel{display:none}
-body.tv .hud{padding:14px 24px 6px}
-body.tv .hud .clock{font-size:54px}
-body.tv .hud .pz{font-size:40px}
-body.tv .feedline{font-size:22px;height:34px}
-body.tv .hud .role{font-size:18px}
+body.tv .hud{padding:16px 24px 6px;gap:14px}
+body.tv .hud .clock{font-size:46px;min-width:150px}
+body.tv .hud .pz{font-size:34px}
+body.tv .bar{height:16px}
+body.tv .feedline{height:44px}
+body.tv .feedline span{font-size:22px}
+body.tv .hud .role{font-size:20px}
 .tvside{display:none}
 body.tv #game{flex-direction:row}
-body.tv .gmain{flex:1;display:flex;flex-direction:column;min-width:0}
-body.tv .tvside{display:flex;flex:0 0 300px;flex-direction:column;gap:10px;padding:18px 18px 18px 0}
-.tvside .plist .prow{font-size:18px}
-.tvlog{flex:1;overflow:hidden;font-size:16px;font-weight:700;line-height:1.8;display:flex;flex-direction:column;justify-content:flex-end}
+body.tv .gmain{flex:1;display:flex;flex-direction:column;min-width:0;padding-bottom:16px}
+body.tv .tvside{display:flex;flex:0 0 320px;flex-direction:column;gap:12px;padding:18px 18px 18px 0}
+.tvside .prow{font-size:18px}
+.tvside .ticket .code{font-size:40px;letter-spacing:8px}
+.tvlog{flex:1;overflow:hidden;font-size:16px;font-weight:800;line-height:1.9;display:flex;flex-direction:column;justify-content:flex-end}
 .gmain{flex:1;display:flex;flex-direction:column;min-height:0}
 
 /* ---- 結算 ---- */
-.result{font-size:30px;font-weight:800;text-align:center;line-height:1.3}
-.subres{font-size:15px;text-align:center;color:#7a6455;line-height:1.7}
-.stats{width:100%;border-collapse:collapse;font-size:14px}
-.stats td,.stats th{padding:6px 4px;text-align:center;border-bottom:1px solid var(--line)}
-.stats th{color:var(--dim);font-weight:500}
-.awards{display:flex;flex-direction:column;gap:6px;font-size:15px;font-weight:700}
-#count .num{font-size:110px;font-weight:800;color:var(--tomato)}
+.banner{text-align:center}
+.banner .big{font-size:76px;line-height:1;display:inline-block}
+.result{font-size:28px;font-weight:800;text-align:center;line-height:1.3}
+.subres{font-size:15px;text-align:center;color:#8a6f5c;line-height:1.7;font-weight:700}
+.stats{width:100%;border-collapse:collapse;font-size:15px;font-weight:700}
+.stats td,.stats th{padding:7px 4px;text-align:center;border-bottom:2px dashed var(--line)}
+.stats tr:last-child td{border-bottom:none}
+.stats td:first-child{text-align:left}
+.stats th{color:var(--dim);font-size:13px}
+.stats tr.mine td{background:#fff1b0}
+.awards{display:flex;flex-direction:column;gap:6px;font-size:15px;font-weight:800;line-height:1.6;background:#fff8dc}
 </style>
 </head>
 <body>
@@ -162,40 +225,58 @@ body.tv .tvside{display:flex;flex:0 0 300px;flex-direction:column;gap:10px;paddi
 <!-- ============ 首頁 ============ -->
 <div id="home" class="screen mid">
   <div class="sheet stack">
-    <h1>🍕 披薩大盜<span class="sub">P I Z Z A&nbsp;&nbsp;T H I E F</span></h1>
-    <input id="name" maxlength="8" placeholder="你的名字" autocomplete="off">
-    <div class="rowg">
-      <input id="jcode" maxlength="4" inputmode="numeric" placeholder="房號">
-      <button class="btn red" id="bJoin" style="flex:0 0 150px">👨‍🍳 當店員</button>
+    <div class="hero">
+      <div class="logo wobble">🍕</div>
+      <h1>披薩大盜</h1>
+      <div class="sub">PIZZA THIEF</div>
     </div>
-    <button class="btn ghost" id="bCreate">🦹 我是大盜(開房)</button>
+    <input id="name" maxlength="8" placeholder="先輸入你的名字 ✏️" autocomplete="off">
+    <div class="roles">
+      <div class="card role-card chef">
+        <div class="face">👨‍🍳</div>
+        <div class="t">當店員</div>
+        <div class="d">抓住大盜!<br>輸入大盜給你的房號</div>
+        <input id="jcode" maxlength="4" inputmode="numeric" placeholder="房號">
+        <button class="btn red" id="bJoin">加入</button>
+      </div>
+      <div class="card role-card thief">
+        <div class="face">🦹</div>
+        <div class="t">當大盜</div>
+        <div class="d">偷披薩、別被抓!<br>你開房,店員來加入</div>
+        <button class="btn yellow" id="bCreate" style="margin-top:auto">開房</button>
+      </div>
+    </div>
     <div class="err" id="err"></div>
-    <div class="soft rules">
-      🦹 <b>大盜</b>闖進披薩店偷披薩,👨‍🍳 <b>店員</b>要抓住他。<br>
-      地圖上每一格都有數字,<b>要走過去,就得把那格的數字質因數分解</b>。<br>
-      一次打一個質因數按送出,拆到剩 1 就走過去。打錯暈 1 秒。<br>
-      質數格只要打它自己就能過 —— 但 91 不是質數喔。<br>
-      店員<b>走進大盜的格子</b> = 抓到,店員過關!<br>
-      大盜<b>撐到時間到</b>或<b>偷滿披薩</b> = 大盜勝。<br>
-      大盜每偷一片披薩會撿到道具:🛵 外送車、🌶️ 辣椒粉、🪑 翻桌
-    </div>
-    <div class="note"><a href="#" id="bTv">📺 大螢幕觀戰模式</a></div>
+    <details class="card">
+      <summary>📖 怎麼玩?</summary>
+      <ul class="steps">
+        <li><span class="ic">👣</span><span>點<b>旁邊發亮的格子</b>,把格子上的數字<b>拆成質因數</b>,一次打一個、按送出。拆到剩 1 就走過去。<br><span class="eg">12</span> → 2 → 2 → 3 ✓</span></li>
+        <li><span class="ic">✨</span><span><b>質數格最快</b>:打它自己就過。但 <span class="eg">91</span> = 7×13,不是質數喔!</span></li>
+        <li><span class="ic">💫</span><span>打錯會<b>暈 1 秒</b>。走過的格子數字會換新。</span></li>
+        <li><span class="ic">👨‍🍳</span><span><b>店員</b>走進大盜的格子 = 抓到,店員過關!</span></li>
+        <li><span class="ic">🦹</span><span><b>大盜</b>撐到時間到、或偷滿 🍕 = 大盜勝。每偷一片會撿到道具:🛵 外送車、🌶️ 辣椒粉、🪑 翻桌。</span></li>
+      </ul>
+    </details>
+    <div class="note"><a href="#" id="bTv">📺 大螢幕觀戰</a>(先在房號欄輸入房號)</div>
   </div>
 </div>
 
 <!-- ============ 大廳 ============ -->
 <div id="lobby" class="screen mid hide">
   <div class="sheet stack">
-    <div class="note" id="lbTip">掃 QR code 或輸入房號加入</div>
-    <div class="code" id="lbCode">----</div>
-    <img class="qr" id="lbQr" alt="">
+    <div class="card ticket popin">
+      <div class="label">房號</div>
+      <div class="code" id="lbCode">----</div>
+      <img class="qr" id="lbQr" alt="">
+      <div class="note" id="lbTip" style="color:var(--ink);opacity:.65"></div>
+    </div>
     <div class="plist" id="lbList"></div>
     <div id="bossBox" class="stack hide">
-      <div class="soft">
+      <div class="card">
         <div class="diff">
-          <button class="btn ghost" id="bEasy">−</button>
+          <button class="btn sm" id="bEasy" title="對店員簡單一點">−</button>
           <div class="v" id="lbDiff"></div>
-          <button class="btn ghost" id="bHard">＋</button>
+          <button class="btn sm" id="bHard" title="對店員難一點">＋</button>
         </div>
       </div>
       <button class="btn red" id="bStart">開始!</button>
@@ -206,26 +287,26 @@ body.tv .tvside{display:flex;flex:0 0 300px;flex-direction:column;gap:10px;paddi
 </div>
 
 <!-- ============ 倒數 ============ -->
-<div id="count" class="screen mid hide"><div class="num" id="cntNum">3</div><div class="note" id="cntRole"></div></div>
+<div id="count" class="screen hide"><div class="num" id="cntNum">3</div><div class="note" id="cntRole"></div></div>
 
 <!-- ============ 遊戲 ============ -->
 <div id="game" class="screen hide">
   <div class="gmain">
     <div class="hud">
-      <div class="clock" id="clock">0</div>
-      <div class="pz" id="pzCount">🍕 0/6</div>
-      <div class="role" id="roleTag"></div>
+      <div class="pill clock" id="clock">⏱ 0</div>
+      <div class="pill pz"><span id="pzCount">🍕 0/6</span><div class="bar"><i id="pzBar" style="width:0"></i></div></div>
+      <div class="pill role" id="roleTag"></div>
     </div>
-    <div class="feedline" id="feedline"></div>
+    <div class="feedline" id="feedline"><span></span></div>
     <div class="mapwrap" id="mapwrap"><div class="map" id="map"></div></div>
     <div class="panel" id="panel">
       <div class="trow"><div class="target" id="target"></div><div class="items hide" id="items"></div></div>
-      <div class="disp" id="disp"><div class="val ph" id="val">輸入一個質因數</div><button class="del" id="bDel">⌫</button></div>
+      <div class="disp" id="disp"><div class="val ph" id="val"></div></div>
       <div class="pad" id="pad"></div>
     </div>
   </div>
   <div class="tvside">
-    <div class="code" id="tvCode" style="font-size:30px;letter-spacing:6px"></div>
+    <div class="card ticket"><div class="label">房號</div><div class="code" id="tvCode"></div></div>
     <div class="plist" id="tvList"></div>
     <div class="tvlog" id="tvLog"></div>
   </div>
@@ -234,16 +315,15 @@ body.tv .tvside{display:flex;flex:0 0 300px;flex-direction:column;gap:10px;paddi
 <!-- ============ 結算 ============ -->
 <div id="over" class="screen mid hide">
   <div class="sheet stack">
+    <div class="banner"><div class="big popin" id="oEmoji">🎉</div></div>
     <div class="result" id="oTitle"></div>
     <div class="subres" id="oSub"></div>
-    <div class="soft"><table class="stats" id="oStats"></table></div>
-    <div class="soft awards" id="oAwards"></div>
+    <div class="card"><table class="stats" id="oStats"></table></div>
+    <div class="card awards" id="oAwards"></div>
     <button class="btn red hide" id="bLobby">回大廳,下一組</button>
     <div class="note" id="oWait"></div>
   </div>
 </div>
-
-<div id="stunbox" class="hide"></div>
 
 <script>
 const $ = (id) => document.getElementById(id);
@@ -261,7 +341,7 @@ $("name").value = localStorage.getItem("pt_name") || "";
 if (qs.get("join")) $("jcode").value = qs.get("join");
 
 let ws, role = null, code = null, ROWS = 0, COLS = 0, WALLS = [], ITEMS = {}, S = null;
-let buf = "", endsAt = 0, cdEnds = 0, placing = -1, mixTimer = null;
+let aiming = false, buf = "", endsAt = 0, cdEnds = 0, placing = -1, mixTimer = null;
 
 /* ---------- 連線 ---------- */
 function connect(then){
@@ -327,32 +407,33 @@ function drawLobby(m){
   $("lbQr").src = "/qr/" + m.code + ".svg";
   $("lbQr").classList.toggle("hide", role === "chaser");
   const rows = [];
-  if (m.boss) rows.push(`<div class="prow${m.boss.online ? "" : " off"}"><span class="em">🦹</span>${esc(m.boss.name)}<span class="x">大盜</span></div>`);
-  m.chasers.forEach((c, i) => rows.push(`<div class="prow${c.online ? "" : " off"}"><span class="dot" style="background:${CCOL[i]}"></span><span class="em">👨‍🍳</span>${esc(c.name)}${role === "boss" ? `<button class="x" data-kick="${i}">請出去 ✕</button>` : ""}</div>`));
-  for (let i = m.chasers.length; i < 4; i++) rows.push(`<div class="prow off"><span class="em">🪑</span>空位</div>`);
+  if (m.boss) rows.push(`<div class="prow${m.boss.online ? "" : " off"}"><span class="ava boss">🦹</span>${esc(m.boss.name)}<span class="x">大盜${role === "boss" ? "(你)" : ""}</span></div>`);
+  m.chasers.forEach((c, i) => rows.push(`<div class="prow popin${c.online ? "" : " off"}"><span class="ava" style="background:${CCOL[i]}">👨‍🍳</span>${esc(c.name)}${role === "boss" ? `<button class="x" data-kick="${i}">請出去 ✕</button>` : ""}</div>`));
+  for (let i = m.chasers.length; i < 4; i++) rows.push(`<div class="prow empty"><span class="ava"></span>等店員加入…</div>`);
   $("lbList").innerHTML = rows.join("");
   $("lbList").querySelectorAll("[data-kick]").forEach((b) => b.onclick = () => sendMsg({ t:"kick", i: +b.dataset.kick }));
 
   $("bossBox").classList.toggle("hide", role !== "boss");
   if (role === "boss"){
     const rate = m.recentGames ? Math.round(m.recentWins / m.recentGames * 100) + "%" : "—";
-    $("lbDiff").innerHTML = `難度 <b>${m.d > 0 ? "+" : ""}${m.d}</b>(${Math.max(1, m.k)} 個店員)<br>` +
+    $("lbDiff").innerHTML = `店員難度 <b>${m.d > 0 ? "+" : ""}${m.d}</b>(${Math.max(1, m.k)} 個店員)<br>` +
       `⏱ ${m.timeS} 秒 · 🍕 偷 ${m.need} 片就贏<br>` +
       `<span style="color:var(--dim);font-size:12px">這個人數玩了 ${m.games} 場 · 近 ${m.recentGames} 場店員過關率 ${rate}</span>`;
     $("bStart").disabled = m.k < 1;
     $("bStart").textContent = m.k < 1 ? "等店員加入…" : `開始!(${m.k} 個店員)`;
     $("tvHint").innerHTML = `大螢幕請開 <b>${location.host}/?screen=${m.code}</b>`;
   }
-  $("lbTip").textContent = role === "chaser" ? "你是 👨‍🍳 店員" : "掃 QR code 或輸入房號加入";
-  $("lbWait").textContent = role === "boss" ? "" : "等大盜按開始…";
+  $("lbTip").textContent = role === "chaser" ? "你是 👨‍🍳 店員,準備抓人!" : "店員掃 QR code,或在首頁輸入房號";
+  $("lbWait").textContent = role === "boss" ? "" : "⏳ 等大盜按開始…";
 }
 
 function countdown(ms){
   show("count");
   let n = Math.ceil(ms / 1000);
-  $("cntNum").textContent = n;
-  $("cntRole").textContent = role === "boss" ? "🦹 快逃!偷披薩!" : role === "chaser" ? "👨‍🍳 抓住大盜!" : "";
-  const iv = setInterval(() => { if (--n <= 0) return clearInterval(iv); $("cntNum").textContent = n; }, 1000);
+  const tick = () => { const el = $("cntNum"); el.textContent = n; el.classList.remove("tick"); void el.offsetWidth; el.classList.add("tick"); };
+  tick();
+  $("cntRole").textContent = role === "boss" ? "🦹 偷披薩,別被抓到!" : role === "chaser" ? "👨‍🍳 去抓大盜!" : "準備開始…";
+  const iv = setInterval(() => { if (--n <= 0) return clearInterval(iv); tick(); }, 1000);
 }
 
 /* ---------- 地圖 ---------- */
@@ -360,8 +441,8 @@ function startGame(m){
   ROWS = m.rows; COLS = m.cols; WALLS = m.walls; ITEMS = m.items;
   show("game");
   buf = ""; drawBuf(); placing = -1; unscramble(); S = null;
-  $("roleTag").textContent = role === "boss" ? "🦹 大盜" : role === "chaser" ? "👨‍🍳 店員" : "📺 觀戰";
-  $("tvCode").textContent = "房號 " + code;
+  drawRole();
+  $("tvCode").textContent = code;
   $("items").classList.toggle("hide", role !== "boss");
   $("tvLog").innerHTML = "";
   const map = $("map");
@@ -370,20 +451,26 @@ function startGame(m){
   map.innerHTML = "";
   for (let i = 0; i < ROWS * COLS; i++){
     const d = document.createElement("div");
-    d.className = "cell" + (WALLS[i] ? " wall" : "");
+    d._base = "cell" + ((Math.floor(i / COLS) + i % COLS) % 2 ? " alt" : "");
+    d.className = d._base + (WALLS[i] ? " wall" : "");
     d.innerHTML = `<span class="n"></span>`;
     d.onclick = () => tapCell(i);
     map.appendChild(d);
   }
   sizeMap();
 }
+function drawRole(){
+  const t = $("roleTag");
+  t.textContent = role === "boss" ? "🦹 大盜" : role === "chaser" ? "👨‍🍳 店員" : "📺 觀戰";
+  t.className = "pill role " + (role || "");
+}
 function sizeMap(){
   if (!COLS) return;
   const w = $("mapwrap");
   const avail = Math.min(w.clientWidth - 16, w.clientHeight - 4);
-  const cs = Math.max(22, Math.floor((avail - 8 - 3 * (COLS - 1)) / COLS));
+  const cs = Math.max(22, Math.floor((avail - 22 - 3 * (COLS - 1)) / COLS));
   $("map").style.setProperty("--cs", cs + "px");
-  $("map").style.fontSize = Math.round(cs * 0.36) + "px";
+  $("map").style.fontSize = Math.round(cs * (COLS >= 11 ? 0.4 : 0.37)) + "px";
 }
 addEventListener("resize", sizeMap);
 if (window.ResizeObserver) new ResizeObserver(sizeMap).observe($("mapwrap"));
@@ -393,6 +480,7 @@ function render(s){
   S = s;
   endsAt = Date.now() + s.msLeft;
   $("pzCount").textContent = `🍕 ${s.got}/${s.need}`;
+  $("pzBar").style.width = Math.min(100, s.got / s.need * 100) + "%";
   const me = s.me;
   const cells = $("map").children;
   const at = {};
@@ -404,27 +492,33 @@ function render(s){
     const p = at[i];
     const blocked = tables.has(i) || s.people.some((q) => q.role === "chaser" && q.pos === i && (!me || q.id !== me.id));
     const canGo = me && !blocked && adj(me.pos, i) === 1;
-    let cls = "cell";
+    const bossHere = p && p.role === "boss";
+    let cls = c._base;
     if (tables.has(i)) cls += " tbl";
     if (pizzas.has(i)) cls += " haspz";
     if (p) cls += " occ" + (p.stun ? " stunned" : "") + (p.online ? "" : " off");
     if (me && me.pos === i) cls += " me";
     if (me && placing >= 0) { if (adj(me.pos, i) <= 2 && !p && !tables.has(i) && !pizzas.has(i) && i !== me.pos) cls += " place"; }
     else if (me && me.aim === i) cls += " aim";
-    else if (canGo) cls += " can";
+    else if (canGo) cls += role === "chaser" && bossHere ? " catch" : " can";
     if (c.className !== cls) c.className = cls;
     let html = `<span class="n">${s.nums[i]}</span>`;
     if (pizzas.has(i)) html += `<span class="pz">🍕</span>`;
     if (p){
-      html += `<span class="who">${p.role === "boss" ? "🦹" : "👨‍🍳"}</span>`;
+      html += p.role === "boss" ? `<span class="who boss">🦹</span>` : `<span class="who" style="background:${CCOL[p.idx]}">👨‍🍳</span>`;
       if (p.role === "chaser") html += `<span class="tag" style="background:${CCOL[p.idx]}">${esc(p.name.slice(0, 2))}</span>`;
     }
     if (c._h !== html){ c.innerHTML = html; c._h = html; }
   }
-  $("roleTag").textContent = role === "boss" ? "🦹 大盜" : role === "chaser" ? "👨‍🍳 店員" : "📺 觀戰";
+  drawRole();
 
   if (me){
     cdEnds = Date.now() + Math.max(me.cdMs, me.stunMs);
+    aiming = me.aim !== null && me.aim !== undefined;
+    if (!aiming) buf = "";
+    drawBuf();
+    [...$("pad").children].forEach((b) => (b.disabled = Date.now() < cdEnds || !aiming));
+    if (me.scrambleMs > 300 && !mixTimer) scramble(me.scrambleMs, true);  // 重連時接回辣椒粉效果
     drawTarget(me);
     if (role === "boss") drawItems(me);
   }
@@ -433,18 +527,22 @@ function render(s){
 function drawTarget(me){
   const t = $("target");
   if (me.aim === null || me.aim === undefined){
-    t.innerHTML = `<div class="hint">${placing >= 0 ? "🪑 點一格放桌子(2 格內)" : me.freeMoves > 0 ? `🛵 外送車:點相鄰格直接走(剩 ${me.freeMoves} 步)` : "點地圖上發亮的格子移動"}</div>`;
+    const goal = role === "boss" ? "去偷 🍕,別被店員抓到" : "走進 🦹 的格子就抓到他";
+    t.innerHTML = `<div class="hint">${placing >= 0 ? "🪑 點紅框的格子放桌子<br><small>再按一次道具取消</small>"
+      : me.freeMoves > 0 ? `🛵 外送車中!點旁邊的格子直接走(剩 ${me.freeMoves} 步)`
+      : `👆 點旁邊發亮的格子<br><small>${goal}</small>`}</div>`;
     return;
   }
-  const got = me.got.length ? `${me.aimN} ÷ <b>${me.got.join(" ÷ ")}</b>` : `把 ${me.aimN} 拆完就走過去`;
-  t.innerHTML = `<div class="big">${me.rem}</div><div class="sm">${got}</div>`;
+  const chips = me.got.map((g) => `<span class="chip">÷${g}</span>`).join("");
+  const sm = me.got.length ? `${me.aimN} ${chips} = 剩` : `把 <b style="color:var(--ink)">${me.aimN}</b> 拆到剩 1 就過去`;
+  t.innerHTML = `<div class="sm">${sm}</div><div class="big">${me.rem}</div>`;
 }
 function drawItems(me){
   const slots = [0, 1].map((k) => {
     const it = me.items[k];
-    if (!it) return `<button class="item" disabled>空</button>`;
+    if (!it) return `<button class="item" disabled><span class="e">🎁</span>空</button>`;
     const d = ITEMS[it];
-    return `<button class="item${placing === k ? " on" : ""}" data-s="${k}" title="${d.desc}"><span class="e">${d.emoji}</span>${d.name}</button>`;
+    return `<button class="item${placing === k ? " on" : ""}" data-s="${k}" title="${d.desc}"><span class="e">${d.emoji}</span>${placing === k ? "取消" : d.name}</button>`;
   });
   const h = slots.join("");
   if ($("items")._h !== h){
@@ -455,7 +553,7 @@ function drawItems(me){
 function useItem(k){
   const it = S && S.me && S.me.items[k];
   if (!it) return;
-  if (it === "table"){ placing = placing === k ? -1 : k; return render(S); }
+  if (it === "table"){ placing = placing === k ? -1 : k; if (placing >= 0) flash(ITEMS.table.desc, "skill"); return render(S); }
   placing = -1;
   sendMsg({ t:"item", slot: k });
 }
@@ -470,8 +568,8 @@ function tapCell(i){
 }
 function drawTvSide(s){
   const rows = s.people.map((p) => p.role === "boss"
-    ? `<div class="prow"><span class="em">🦹</span>${esc(p.name)}<span class="x">🍕 ${s.got}/${s.need}</span></div>`
-    : `<div class="prow${p.online ? "" : " off"}"><span class="dot" style="background:${CCOL[p.idx]}"></span><span class="em">👨‍🍳</span>${esc(p.name)}${p.stun ? '<span class="x">🍺 滑倒</span>' : ""}</div>`);
+    ? `<div class="prow"><span class="ava boss">🦹</span>${esc(p.name)}<span class="x">🍕 ${s.got}/${s.need}</span></div>`
+    : `<div class="prow${p.online ? "" : " off"}"><span class="ava" style="background:${CCOL[p.idx]}">👨‍🍳</span>${esc(p.name)}${p.stun ? '<span class="x">💫 暈了</span>' : ""}</div>`);
   $("tvList").innerHTML = rows.join("");
 }
 
@@ -479,32 +577,36 @@ function drawTvSide(s){
 const KEYS = ["1","2","3","4","5","6","7","8","9","⌫","0","送出"];
 const DIGIT_POS = [0,1,2,3,4,5,6,7,8,10];
 const DIGITS = ["1","2","3","4","5","6","7","8","9","0"];
-$("pad").innerHTML = KEYS.map((k) => `<button class="key${k === "送出" ? " go" : ""}" data-k="${k}">${k}</button>`).join("");
+$("pad").innerHTML = KEYS.map((k) => `<button class="key${k === "送出" ? " go" : k === "⌫" ? " bs" : ""}" data-k="${k}">${k}</button>`).join("");
 [...$("pad").children].forEach((b) => b.onclick = () => tap(b.dataset.k));
-$("bDel").onclick = () => tap("⌫");
 function setKeys(order){
   const btns = [...$("pad").children];
   DIGIT_POS.forEach((pos, k) => { const b = btns[pos]; b.dataset.k = order[k]; b.textContent = order[k]; b.classList.toggle("mixed", order[k] !== DIGITS[k]); });
 }
-function scramble(ms){
+function scramble(ms, quiet){
   const o = DIGITS.slice();
   for (let i = o.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [o[i], o[j]] = [o[j], o[i]]; }
   setKeys(o);
   clearTimeout(mixTimer); mixTimer = setTimeout(unscramble, ms);
-  flash("🌶️ 辣椒粉!鍵盤亂掉了", "skill");
+  if (!quiet) flash("🌶️ 辣椒粉!鍵盤亂掉了", "skill");
 }
-function unscramble(){ clearTimeout(mixTimer); setKeys(DIGITS); }
+function unscramble(){ clearTimeout(mixTimer); mixTimer = null; setKeys(DIGITS); }
 const physical = (d) => [...$("pad").children][DIGIT_POS[DIGITS.indexOf(d)]].dataset.k;
 
 function tap(k){
-  if (Date.now() < cdEnds) return;
+  if (Date.now() < cdEnds || !aiming) return;
   if (k === "送出") return submit();
   if (k === "⌫"){ buf = buf.slice(0, -1); return drawBuf(); }
   if (buf.length >= 4) return;
   if (buf === "0") buf = "";
   buf += k; drawBuf();
 }
-function drawBuf(){ const v = $("val"); v.textContent = buf || "輸入一個質因數"; v.classList.toggle("ph", !buf); }
+function drawBuf(){
+  if (Date.now() < cdEnds) return;
+  const v = $("val");
+  v.textContent = buf || (aiming ? "輸入一個質因數,按送出" : "先選一格要去的地方");
+  v.classList.toggle("ph", !buf);
+}
 function submit(){
   const v = parseInt(buf, 10);
   buf = ""; drawBuf();
@@ -529,15 +631,10 @@ function fx(m){
   if (m.kind === "miss"){ $("disp").classList.remove("shake"); void $("disp").offsetWidth; $("disp").classList.add("shake"); if (navigator.vibrate) navigator.vibrate(120); }
   if (m.kind === "scramble") scramble(m.ms);
 }
-let stunT = null;
-function stunBox(text, ms){
-  $("stunbox").textContent = text; $("stunbox").classList.remove("hide");
-  clearTimeout(stunT); stunT = setTimeout(() => $("stunbox").classList.add("hide"), ms);
-}
 function flash(text, kind){
-  const fl = $("feedline");
-  fl.className = "feedline k-" + (kind || "sys");
-  fl.textContent = text;
+  const fl = document.createElement("span");
+  fl.className = "k-" + (kind || "sys"); fl.textContent = text;
+  $("feedline").replaceChildren(fl);
   if (TV){
     const d = document.createElement("div"); d.className = "k-" + (kind || "sys"); d.textContent = text;
     $("tvLog").appendChild(d);
@@ -548,22 +645,24 @@ function flash(text, kind){
 
 /* ---------- 結算 ---------- */
 function drawOver(m){
-  show("over"); placing = -1; unscramble(); $("stunbox").classList.add("hide");
+  show("over"); placing = -1; unscramble(); aiming = false;
   const youWin = role === "boss" ? !m.chasersWin : role === "chaser" ? m.chasersWin : null;
   const head = m.why === "caught" ? `🚔 大盜被 ${esc(m.catcher)} 抓到了!`
              : m.why === "pizza"  ? `🦹 大盜帶著 ${m.got} 片披薩逃走了!`
              : `⏱ 時間到,大盜成功脫逃!`;
-  $("oTitle").innerHTML = (youWin === null ? "" : youWin ? "🎉 你贏了<br>" : "😵 你輸了<br>") + head;
+  $("oEmoji").textContent = youWin === null ? (m.chasersWin ? "🚔" : "🦹") : youWin ? "🎉" : "😵";
+  $("oEmoji").classList.remove("popin"); void $("oEmoji").offsetWidth; $("oEmoji").classList.add("popin", "wobble");
+  $("oTitle").innerHTML = (youWin === null ? "" : youWin ? "你贏了!<br>" : "差一點!<br>") + head;
   $("oTitle").style.color = youWin === null ? "var(--ink)" : youWin ? "var(--basil)" : "var(--tomato)";
   $("oSub").innerHTML = `${m.chasersWin ? "👨‍🍳 店員過關" : "🦹 大盜勝"} · 用時 ${m.elapsed} 秒 · 🍕 ${m.got}/${m.need}`;
   $("oStats").innerHTML = `<tr><th></th><th>走了幾步</th><th>打錯</th></tr>` +
-    m.stats.map((p) => `<tr><td>${p.role === "boss" ? "🦹" : "👨‍🍳"} ${esc(p.name)}</td><td>${p.moves}</td><td>${p.misses}</td></tr>`).join("");
+    m.stats.map((p) => `<tr class="${p.role === role && p.name === myName() ? "mine" : ""}"><td>${p.role === "boss" ? "🦹" : "👨‍🍳"} ${esc(p.name)}</td><td>${p.moves}</td><td>${p.misses}</td></tr>`).join("");
   const ch = m.stats.filter((p) => p.role === "chaser");
   const aw = [];
   if (ch.length){
     const run = ch.reduce((a, b) => (b.moves > a.moves ? b : a));
     const shaky = ch.reduce((a, b) => (b.misses > a.misses ? b : a));
-    aw.push(`🏃 最勤勞的店員:${esc(run.name)}(${run.moves} 步)`);
+    if (run.moves > 0) aw.push(`🏃 最勤勞的店員:${esc(run.name)}(${run.moves} 步)`);
     if (shaky.misses > 0) aw.push(`🫗 手最抖:${esc(shaky.name)}(打錯 ${shaky.misses} 次)`);
   }
   if (m.catcher) aw.push(`🚔 逮捕英雄:${esc(m.catcher)}`);
@@ -581,9 +680,9 @@ setInterval(() => {
   $("clock").classList.toggle("low", left <= 15);
   const cd = cdEnds - Date.now(), on = cd > 0;
   $("disp").classList.toggle("cool", on);
-  if (on){ $("val").textContent = `暈 ${(cd / 1000).toFixed(1)}s`; $("val").classList.remove("ph"); }
-  else if ($("val").textContent.startsWith("暈")) drawBuf();
-  [...$("pad").children].forEach((b) => (b.disabled = on));
+  if (on){ $("val").textContent = `💫 暈 ${(cd / 1000).toFixed(1)}s`; $("val").classList.remove("ph"); }
+  else if ($("val").textContent.startsWith("💫")) drawBuf();
+  [...$("pad").children].forEach((b) => (b.disabled = on || !aiming));
 }, 100);
 </script>
 </body>
