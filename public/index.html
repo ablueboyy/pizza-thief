@@ -108,7 +108,7 @@ details[open].card summary::after{content:"－"}
 .hud{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:8px 10px 4px}
 .pill{display:flex;align-items:center;gap:4px;background:#fff;border:2.5px solid var(--ol);border-radius:999px;padding:1px 12px;
   font-weight:800;box-shadow:0 3px 0 var(--ol);white-space:nowrap}
-.hud .clock{font-size:22px;min-width:76px;justify-content:center}
+.hud .clock{font-size:21px;min-width:68px;justify-content:center;padding:1px 8px}
 .hud .clock.low{background:var(--tomato);color:#fff;animation:beat 1s infinite}
 @keyframes beat{50%{transform:scale(1.07)}}
 .hud .pz{font-size:18px;flex:1;min-width:0;gap:8px}
@@ -165,13 +165,22 @@ details[open].card summary::after{content:"－"}
 .chip{background:var(--basil);color:#fff;border-radius:8px;padding:0 5px;font-weight:800;font-size:13px;animation:popin .3s var(--pop)}
 .target .hint{flex:1;text-align:center;color:#8a6f5c;font-size:14px;font-weight:800;line-height:1.3}
 .target .hint small{font-size:12px;color:var(--dim)}
-.items{flex:0 0 auto;display:flex;gap:5px}
-.item{font:inherit;min-width:48px;border:2.5px solid var(--ol);background:#fff;border-radius:12px;padding:0 4px;font-size:10px;font-weight:800;
+.items{flex:0 0 auto;display:flex;gap:4px}
+.item{font:inherit;min-width:42px;border:2.5px solid var(--ol);background:#fff;border-radius:12px;padding:0 4px;font-size:10px;font-weight:800;
   cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 3px 0 var(--ol);height:42px;line-height:1.05;color:var(--ink)}
 .item .e{font-size:18px}
 .item:active:not(:disabled){transform:translateY(3px);box-shadow:none}
 .item.on{background:var(--tomato);color:#fff;animation:beat .8s infinite}
 .item:disabled{opacity:.35;border-style:dashed;box-shadow:none}
+.item.used .e{filter:grayscale(1)}
+.quit{font:inherit;flex:0 0 auto;width:34px;height:34px;border-radius:50%;border:2.5px solid var(--ol);background:#fff;color:var(--ink);
+  font-size:15px;font-weight:800;box-shadow:0 3px 0 var(--ol);cursor:pointer;padding:0}
+.quit:active{transform:translateY(3px);box-shadow:none}
+/* 🐙 墨汁:蓋在地圖上,手指還是點得到下面的格子 */
+.ink{position:absolute;inset:0;z-index:30;pointer-events:none;overflow:hidden}
+.ink svg{position:absolute;overflow:visible;animation:splat .32s cubic-bezier(.2,1.6,.4,1) both}
+.ink.fade svg{transition:opacity .9s;opacity:0}
+@keyframes splat{from{transform:scale(.2);opacity:0}}
 .disp{flex:0 0 34%;display:flex;align-items:center;justify-content:center;background:#fff;border:2.5px solid var(--line);border-radius:16px;transition:background .1s,border-color .1s}
 .disp .val{font-size:26px;font-weight:800;letter-spacing:3px;text-align:center}
 .disp .val.ph{color:#a8907d;font-size:14px;letter-spacing:0;font-weight:700}
@@ -185,8 +194,6 @@ details[open].card summary::after{content:"－"}
 .key.star{background:var(--cheese);font-size:15px;line-height:1.1}
 .key.star b{display:block;font-size:22px}
 .key:disabled{opacity:.35}
-.key.mixed{background:#ffe6c7;color:var(--tomato-d);animation:wob .45s}
-@keyframes wob{0%{transform:rotate(-9deg) scale(.86)}55%{transform:rotate(5deg) scale(1.04)}100%{transform:none}}
 .shake{animation:shk .3s}
 @keyframes shk{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
 
@@ -256,7 +263,7 @@ body.tv .tvside{display:flex;flex:0 0 320px;flex-direction:column;gap:12px;paddi
         <li><span class="ic">★</span><span>剩下的數<b>已經是質數</b>就按 ★ 收尾:<span class="eg">94</span> → 2 → ★(47)。<span class="eg">97</span> 直接 ★ 一下就過!但 <span class="eg">91</span> = 7×13,不是質數喔!</span></li>
         <li><span class="ic">💫</span><span>打錯會<b>暈 1 秒</b>。走過的格子數字會換新。</span></li>
         <li><span class="ic">👨‍🍳</span><span><b>店員</b>走進大盜的格子 = 抓到,店員過關!</span></li>
-        <li><span class="ic">🦹</span><span><b>大盜</b>撐到時間到、或偷滿 🍕 = 大盜勝。每偷一片會撿到道具:🛵 外送車、🌶️ 辣椒粉、🪑 翻桌。</span></li>
+        <li><span class="ic">🦹</span><span><b>大盜</b>撐到時間到、或偷滿 🍕 = 大盜勝。三個道具<b>各能用一次</b>:🛵 外送車(3 步免解題)、🐙 墨汁(店員螢幕被噴黑)、🪑 翻桌(擋路)。</span></li>
       </ul>
     </details>
     <div class="note"><a href="#" id="bTv">📺 大螢幕觀戰</a>(先在房號欄輸入房號)</div>
@@ -299,8 +306,9 @@ body.tv .tvside{display:flex;flex:0 0 320px;flex-direction:column;gap:12px;paddi
       <div class="pill pz"><span id="pzCount">🍕 0/6</span><div class="bar"><i id="pzBar" style="width:0"></i></div></div>
       <div class="pill role" id="roleTag"></div>
       <div class="items hide" id="items"></div>
+      <button class="quit hide" id="bQuit" title="結束這局">✕</button>
     </div>
-    <div class="mapwrap" id="mapwrap"><div class="feedline" id="feedline"><span></span></div><div class="map" id="map"></div></div>
+    <div class="mapwrap" id="mapwrap"><div class="feedline" id="feedline"><span></span></div><div class="map" id="map"></div><div class="ink" id="ink"></div></div>
     <div class="panel" id="panel">
       <div class="trow"><div class="target" id="target"></div><div class="disp" id="disp"><div class="val ph" id="val"></div></div></div>
       <div class="pad" id="pad"></div>
@@ -341,9 +349,10 @@ if (!tok) { tok = Math.random().toString(36).slice(2) + Date.now().toString(36);
 $("name").value = localStorage.getItem("pt_name") || "";
 if (qs.get("join")) $("jcode").value = qs.get("join");
 
+let inkTimer = null, inkUntil = 0;
 let ws, role = null, code = null, ROWS = 0, COLS = 0, WALLS = [], ITEMS = {}, S = null;
 let seq = 0, opt = null, localCd = 0, lastLocalMiss = 0;   // 預測:先畫結果,伺服器確認後再對齊
-let aiming = false, endsAt = 0, cdEnds = 0, placing = -1, mixTimer = null;
+let aiming = false, endsAt = 0, cdEnds = 0, placing = -1;
 
 /* ---------- 連線 ---------- */
 function connect(then){
@@ -442,10 +451,11 @@ function countdown(ms){
 function startGame(m){
   ROWS = m.rows; COLS = m.cols; WALLS = m.walls; ITEMS = m.items;
   show("game");
-  drawBuf(); placing = -1; unscramble(); S = null; opt = null; localCd = 0;
+  drawBuf(); placing = -1; clearInk(); S = null; opt = null; localCd = 0;
   drawRole();
   $("tvCode").textContent = code;
   $("items").classList.toggle("hide", role !== "boss");
+  $("bQuit").classList.toggle("hide", role !== "boss");
   $("tvLog").innerHTML = "";
   const map = $("map");
   map.style.gridTemplateColumns = `repeat(${COLS}, var(--cs))`;
@@ -526,7 +536,7 @@ function render(s){
     aiming = me.aim !== null && me.aim !== undefined;
     drawBuf();
     [...$("pad").children].forEach((b) => (b.disabled = Date.now() < cdEnds || !aiming));
-    if (me.scrambleMs > 300 && !mixTimer) scramble(me.scrambleMs, true);  // 重連時接回辣椒粉效果
+    if (me.inkMs > 300 && Date.now() > inkUntil) ink(me.inkMs, true);  // 重連時接回墨汁
     drawTarget(me);
     if (role === "boss") drawItems(me);
   }
@@ -546,18 +556,17 @@ function drawTarget(me){
   t.innerHTML = `<div class="big">${me.rem}</div><div class="sm">${sm}</div>`;
 }
 function drawItems(me){
-  const slots = [0, 1].map((k) => {
-    const it = me.items[k];
-    if (!it) return `<button class="item" disabled><span class="e">🎁</span>空</button>`;
-    const d = ITEMS[it];
+  const h = Object.keys(ITEMS).map((key, k) => {
+    const d = ITEMS[key], left = me.items[k];
+    if (!left) return `<button class="item used" disabled><span class="e">${d.emoji}</span>用過</button>`;
     return `<button class="item${placing === k ? " on" : ""}" data-s="${k}" title="${d.desc}"><span class="e">${d.emoji}</span>${placing === k ? "取消" : d.name}</button>`;
-  });
-  const h = slots.join("");
+  }).join("");
   if ($("items")._h !== h){
     $("items").innerHTML = h; $("items")._h = h;
     $("items").querySelectorAll("[data-s]").forEach((b) => b.onpointerdown = (e) => { e.preventDefault(); useItem(+b.dataset.s); });
   }
 }
+$("bQuit").onclick = () => { if (confirm("確定要結束這局嗎?(這局不算難度)")) sendMsg({ t:"quit" }); };
 function useItem(k){
   const it = S && S.me && S.me.items[k];
   if (!it) return;
@@ -630,20 +639,41 @@ $("pad").innerHTML = KEYS.map((k) => `<button class="key${k === "★" ? " star" 
   b.onpointerdown = (e) => { e.preventDefault(); if (b.disabled) return; b.classList.add("down"); tap(b.dataset.k); };
   b.onpointerup = b.onpointerleave = b.onpointercancel = () => b.classList.remove("down");
 });
-function setKeys(order){
-  [...$("pad").children].forEach((b, k) => {
-    b.dataset.k = order[k]; b.innerHTML = keyHtml(order[k]);
-    b.classList.toggle("star", order[k] === "★"); b.classList.toggle("mixed", order[k] !== KEYS[k]);
-  });
+// 🐙 墨汁:隨機噴幾坨不規則的墨漬 + 小墨點,時間到慢慢淡掉
+function blob(r){
+  const n = 9 + Math.floor(Math.random() * 5), pts = [];
+  for (let i = 0; i < n; i++){
+    const a = i / n * Math.PI * 2, rr = r * (0.55 + Math.random() * 0.6);
+    pts.push([Math.cos(a) * rr, Math.sin(a) * rr]);
+  }
+  let d = "";
+  for (let i = 0; i < n; i++){
+    const p = pts[i], q = pts[(i + 1) % n], m = [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2];
+    d += (i ? " Q" : `M${((pts[n - 1][0] + p[0]) / 2).toFixed(1)},${((pts[n - 1][1] + p[1]) / 2).toFixed(1)} Q`) + `${p[0].toFixed(1)},${p[1].toFixed(1)} ${m[0].toFixed(1)},${m[1].toFixed(1)}`;
+  }
+  let drops = "";
+  for (let i = 0, k = 4 + Math.floor(Math.random() * 5); i < k; i++){
+    const a = Math.random() * Math.PI * 2, dd = r * (1.1 + Math.random() * 0.7);
+    drops += `<circle cx="${(Math.cos(a) * dd).toFixed(1)}" cy="${(Math.sin(a) * dd).toFixed(1)}" r="${(r * (0.06 + Math.random() * 0.13)).toFixed(1)}"/>`;
+  }
+  return `<path d="${d} Z"/>${drops}`;
 }
-function scramble(ms, quiet){
-  const o = KEYS.slice();
-  for (let i = o.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [o[i], o[j]] = [o[j], o[i]]; }
-  setKeys(o);
-  clearTimeout(mixTimer); mixTimer = setTimeout(unscramble, ms);
-  if (!quiet) flash("🌶️ 辣椒粉!按鈕位置亂掉了", "skill");
+function ink(ms, quiet){
+  const box = $("ink"), W = box.clientWidth, H = box.clientHeight;
+  box.classList.remove("fade");
+  const html = [];
+  for (let i = 0, n = 6 + Math.floor(Math.random() * 3); i < n; i++){
+    const r = Math.min(W, H) * (0.13 + Math.random() * 0.14);
+    const x = W * (0.08 + Math.random() * 0.84), y = H * (0.08 + Math.random() * 0.84);
+    html.push(`<svg width="1" height="1" style="left:${x}px;top:${y}px;animation-delay:${i * 70}ms;transform:rotate(${Math.random() * 360}deg)"><g fill="#1d1426" fill-opacity=".93">${blob(r)}</g></svg>`);
+  }
+  box.innerHTML = html.join("");
+  inkUntil = Date.now() + ms;
+  clearTimeout(inkTimer);
+  inkTimer = setTimeout(() => { box.classList.add("fade"); inkTimer = setTimeout(clearInk, 950); }, Math.max(0, ms - 900));
+  if (!quiet){ flash("🐙 被噴墨汁了!", "skill"); if (navigator.vibrate) navigator.vibrate([60, 40, 60]); }
 }
-function unscramble(){ clearTimeout(mixTimer); mixTimer = null; setKeys(KEYS); }
+function clearInk(){ clearTimeout(inkTimer); inkTimer = null; inkUntil = 0; $("ink").innerHTML = ""; $("ink").classList.remove("fade"); }
 
 function drawBuf(){
   if (Date.now() < cdEnds) return;
@@ -684,7 +714,7 @@ addEventListener("keydown", (e) => {
 /* ---------- 特效 ---------- */
 function fx(m){
   if (m.kind === "miss" && Date.now() - lastLocalMiss > 1500) missFx();   // 自己已經先震過就不再震一次
-  if (m.kind === "scramble") scramble(m.ms);
+  if (m.kind === "ink") ink(m.ms);
 }
 function missFx(){
   $("disp").classList.remove("shake"); void $("disp").offsetWidth; $("disp").classList.add("shake");
@@ -704,16 +734,18 @@ function flash(text, kind){
 
 /* ---------- 結算 ---------- */
 function drawOver(m){
-  show("over"); placing = -1; unscramble(); aiming = false;
-  const youWin = role === "boss" ? !m.chasersWin : role === "chaser" ? m.chasersWin : null;
+  show("over"); placing = -1; clearInk(); aiming = false;
+  const quit = m.why === "quit";
+  const youWin = quit ? null : role === "boss" ? !m.chasersWin : role === "chaser" ? m.chasersWin : null;
   const head = m.why === "caught" ? `🚔 大盜被 ${esc(m.catcher)} 抓到了!`
              : m.why === "pizza"  ? `🦹 大盜帶著 ${m.got} 片披薩逃走了!`
+             : quit ? `大盜結束了這局`
              : `⏱ 時間到,大盜成功脫逃!`;
-  $("oEmoji").textContent = youWin === null ? (m.chasersWin ? "🚔" : "🦹") : youWin ? "🎉" : "😵";
+  $("oEmoji").textContent = quit ? "🛑" : youWin === null ? (m.chasersWin ? "🚔" : "🦹") : youWin ? "🎉" : "😵";
   $("oEmoji").classList.remove("popin"); void $("oEmoji").offsetWidth; $("oEmoji").classList.add("popin", "wobble");
   $("oTitle").innerHTML = (youWin === null ? "" : youWin ? "你贏了!<br>" : "差一點!<br>") + head;
   $("oTitle").style.color = youWin === null ? "var(--ink)" : youWin ? "var(--basil)" : "var(--tomato)";
-  $("oSub").innerHTML = `${m.chasersWin ? "👨‍🍳 店員過關" : "🦹 大盜勝"} · 用時 ${m.elapsed} 秒 · 🍕 ${m.got}/${m.need}`;
+  $("oSub").innerHTML = `${quit ? "這局不算勝負" : m.chasersWin ? "👨‍🍳 店員過關" : "🦹 大盜勝"} · 用時 ${m.elapsed} 秒 · 🍕 ${m.got}/${m.need}`;
   $("oStats").innerHTML = `<tr><th></th><th>走了幾步</th><th>打錯</th></tr>` +
     m.stats.map((p) => `<tr class="${p.role === role && p.name === myName() ? "mine" : ""}"><td>${p.role === "boss" ? "🦹" : "👨‍🍳"} ${esc(p.name)}</td><td>${p.moves}</td><td>${p.misses}</td></tr>`).join("");
   const ch = m.stats.filter((p) => p.role === "chaser");
@@ -728,7 +760,7 @@ function drawOver(m){
   $("oAwards").innerHTML = aw.join("<br>") || "—";
   $("oAwards").classList.toggle("hide", !aw.length);
   $("bLobby").classList.toggle("hide", role !== "boss");
-  $("oWait").textContent = role === "boss" ? `下一局難度 ${m.d > 0 ? "+" : ""}${m.d}(本局 ${m.dBefore})` : "等大盜開下一局…";
+  $("oWait").textContent = role === "boss" ? quit ? "這局不算進難度" : `下一局難度 ${m.d > 0 ? "+" : ""}${m.d}(本局 ${m.dBefore})` : "等大盜開下一局…";
 }
 
 /* ---------- 計時與冷卻 ---------- */

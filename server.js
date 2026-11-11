@@ -27,13 +27,10 @@ const wss = new WebSocketServer({ server });
 // ================= 規則參數(改這裡調平衡) =================
 const COUNTDOWN    = 3000;
 const MISS_CD      = 1000;  // 打錯:暈 1 秒
-const CHILI_MS     = 6000;  // 🌶️ 鍵盤打亂
-const CHILI_RANGE  = 3;     // 🌶️ 影響範圍(步數)
+const INK_MS       = 6000;  // 🐙 墨汁噴在店員螢幕上多久
 const TABLE_MS     = 12000; // 🪑 桌子維持多久
 const TABLE_RANGE  = 2;     // 🪑 可以放多遠
 const SCOOT_MOVES  = 3;     // 🛵 免解題的步數
-const ITEM_MAX     = 2;     // 大盜身上最多帶幾個道具
-const START_ITEMS  = 1;     // 開局送幾個道具
 const MAX_CHASERS  = 4;
 
 // 自動難度:每個「店員人數」各自一個 d。d 越大對店員越難。
@@ -49,32 +46,32 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
 // 地圖:# = 桌子/烤爐(永久障礙)。1~2 個店員用小地圖,3~4 個用大地圖。
 // 直式長方形:手機是直的,寬度才是瓶頸,所以欄少列多、格子才會大
-// 比例 ≈ 手機扣掉上下面板後的地圖區(約 7:10),格子才能撐滿寬度又不被高度卡住
+// 最左、最右各多一條空走道,讓大盜有地方繞
 const LAYOUTS = {
-  small: [            // 7 欄 × 10 列
-    ".......",
-    ".##.##.",
-    ".......",
-    ".#.#.#.",
-    "...#...",
-    ".......",
-    ".#.#.#.",
-    ".......",
-    ".##.##.",
-    ".......",
+  small: [            // 9 欄 × 10 列
+    ".........",
+    "..##.##..",
+    ".........",
+    "..#.#.#..",
+    "....#....",
+    ".........",
+    "..#.#.#..",
+    ".........",
+    "..##.##..",
+    ".........",
   ],
-  big: [              // 8 欄 × 11 列
-    "........",
-    ".##..##.",
-    ".#....#.",
-    "...##...",
-    "........",
-    ".#....#.",
-    "........",
-    "...##...",
-    ".#....#.",
-    ".##..##.",
-    "........",
+  big: [              // 10 欄 × 11 列
+    "..........",
+    "..##..##..",
+    "..#....#..",
+    "....##....",
+    "..........",
+    "..#....#..",
+    "..........",
+    "....##....",
+    "..#....#..",
+    "..##..##..",
+    "..........",
   ],
 };
 const PIZZAS_ON = { small: 3, big: 4 }; // 場上同時有幾片披薩
@@ -126,7 +123,7 @@ function genNum() {
 const ITEMS = {
   table: { emoji: "🪑", name: "翻桌",   desc: "在 2 格內放一張桌子擋路 12 秒" },
   scoot: { emoji: "🛵", name: "外送車", desc: "接下來 3 步免解題" },
-  chili: { emoji: "🌶️", name: "辣椒粉", desc: "3 步內的店員鍵盤亂掉 6 秒" },
+  ink:   { emoji: "🐙", name: "墨汁",   desc: "所有店員的螢幕被噴墨汁 6 秒" },
 };
 const ITEM_KEYS = Object.keys(ITEMS);
 
@@ -166,7 +163,7 @@ function newCode() { let c; do { c = String(1000 + Math.floor(Math.random() * 90
 function mkPlayer(ws, name, tok, role) {
   return { id: crypto.randomUUID().slice(0, 8), ws, tok: String(tok || "").slice(0, 40), role,
            name: (String(name || "").trim() || (role === "boss" ? "大盜" : "店員")).slice(0, 8),
-           pos: -1, aim: null, aimN: 0, rem: 0, got: [], cdUntil: 0, stunUntil: 0, scrambleUntil: 0,
+           pos: -1, aim: null, aimN: 0, rem: 0, got: [], cdUntil: 0, stunUntil: 0, inkUntil: 0,
            moves: 0, misses: 0, items: [], freeMoves: 0, pizzas: 0 };
 }
 
@@ -213,10 +210,11 @@ function startGame(r) {
 
   const R = r.rows, C = r.cols;
   const corners = [0, R * C - 1, C - 1, (R - 1) * C];
-  const reset = (p) => Object.assign(p, { aim: null, aimN: 0, rem: 0, got: [], cdUntil: 0, stunUntil: 0, scrambleUntil: 0,
+  const reset = (p) => Object.assign(p, { aim: null, aimN: 0, rem: 0, got: [], cdUntil: 0, stunUntil: 0, inkUntil: 0,
                                           moves: 0, misses: 0, items: [], freeMoves: 0, pizzas: 0 });
   reset(r.boss); r.boss.pos = Math.floor(R / 2) * C + Math.floor(C / 2);
-  for (let i = 0; i < START_ITEMS; i++) r.boss.items.push(rnd(ITEM_KEYS));
+  r.boss.items = ITEM_KEYS.slice();   // 三個道具各一次;用掉的那格變 null,位置不會跳
+  r.aborted = false;
   r.chasers.forEach((p, i) => { reset(p); p.pos = corners[i]; });
   for (let i = 0; i < PIZZAS_ON[lay]; i++) spawnPizza(r);
 
@@ -258,7 +256,7 @@ function snapFor(r, me) {
   };
   if (me) s.me = { id: me.id, role: me.role, pos: me.pos, aim: me.aim, aimN: me.aimN, rem: me.rem, got: me.got,
                    cdMs: Math.max(0, me.cdUntil - now), stunMs: Math.max(0, me.stunUntil - now),
-                   scrambleMs: Math.max(0, me.scrambleUntil - now), items: me.items, freeMoves: me.freeMoves, ack: me.ack || 0 };
+                   inkMs: Math.max(0, me.inkUntil - now), items: me.items, freeMoves: me.freeMoves, ack: me.ack || 0 };
   return s;
 }
 function pushState(r) {
@@ -318,10 +316,7 @@ function doMove(r, p) {
   const now = Date.now();
   if (p.role === "boss" && r.pizzas.has(idx)) {
     r.pizzas.delete(idx); p.pizzas++;
-    let extra = "";
-    if (p.items.length < ITEM_MAX) { const it = rnd(ITEM_KEYS); p.items.push(it); extra = `,撿到 ${ITEMS[it].emoji}`; }
     log(r, `🍕 大盜偷到第 ${p.pizzas} 片披薩${p.pizzas < r.need ? `(還差 ${r.need - p.pizzas} 片)` : ""}`, "pizza");
-    if (extra) note(p, `你${extra.slice(1)} ${ITEMS[p.items[p.items.length - 1]].name}`, "skill");
     if (p.pizzas >= r.need) return endGame(r, "pizza");
     spawnPizza(r);
   }
@@ -343,12 +338,11 @@ function onItem(r, p, slot, target) {
   } else if (key === "scoot") {
     p.freeMoves += SCOOT_MOVES;
     log(r, `🛵 大盜騎上外送車,接下來 ${SCOOT_MOVES} 步免解題!`, "skill");
-  } else if (key === "chili") {
-    const hit = r.chasers.filter((q) => dist(r, q.pos, p.pos) <= CHILI_RANGE);
-    hit.forEach((q) => { q.scrambleUntil = now + CHILI_MS; send(q.ws, { t: "fx", kind: "scramble", ms: CHILI_MS }); });
-    log(r, hit.length ? `🌶️ 辣椒粉!${hit.map((q) => q.name).join("、")} 的鍵盤亂了` : "🌶️ 大盜灑了辣椒粉…但沒人在附近", "skill");
+  } else if (key === "ink") {
+    r.chasers.forEach((q) => { q.inkUntil = now + INK_MS; send(q.ws, { t: "fx", kind: "ink", ms: INK_MS }); });
+    log(r, "🐙 大盜噴墨汁!店員什麼都看不清楚", "skill");
   }
-  p.items.splice(slot, 1);
+  p.items[slot] = null;
   pushState(r);
 }
 function endGame(r, why, catcher) {
@@ -356,6 +350,7 @@ function endGame(r, why, catcher) {
   r.phase = "over";
   clearInterval(r.tick);
   const chasersWin = why === "caught";
+  if (why === "quit") r.aborted = true;       // 大盜提前結束:不算進難度
   const df = diffOf(r.k);
   const before = df.d;
   if (!r.aborted) {
@@ -448,6 +443,9 @@ wss.on("connection", (ws) => {
       case "aim":   ackSeq(me, m.seq); return onAim(r, me, m.i);
       case "guess": ackSeq(me, m.seq); return onGuess(r, me, m.v);
       case "item":  return onItem(r, me, m.slot, m.target);
+      case "quit":
+        if (!isBoss || r.phase !== "playing") return;
+        return endGame(r, "quit");
     }
   });
 
