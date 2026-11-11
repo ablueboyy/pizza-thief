@@ -10,7 +10,10 @@ const { WebSocketServer } = require("ws");
 const QRCode = require("qrcode");
 
 const app = express();
-app.use(express.static(path.join(__dirname, "public")));
+// 網頁不要被手機快取:每次都跟伺服器確認,才不會有人拿著舊版畫面玩
+app.use(express.static(path.join(__dirname, "public"), { setHeaders: (res) => res.setHeader("Cache-Control", "no-cache") }));
+// 版本號:每次部署都不同。手機發現版本變了(開著舊頁面、伺服器更新了)就自動重新整理
+const BUILD = crypto.createHash("md5").update(fs.readFileSync(path.join(__dirname, "public", "index.html"))).update(fs.readFileSync(__filename)).digest("hex").slice(0, 8);
 
 // 加入用 QR code:掃了直接打開「加入房間」並帶好房號
 app.get("/qr/:code.svg", async (req, res) => {
@@ -380,6 +383,7 @@ function reattach(r, p, ws) {
 
 wss.on("connection", (ws) => {
   liveConns++;
+  send(ws, { t: "hello", build: BUILD });
   ws.on("message", (buf) => {
     let m; try { m = JSON.parse(buf); } catch { return; }
     const r = ws._room ? rooms.get(ws._room) : null;
@@ -435,6 +439,18 @@ wss.on("connection", (ws) => {
       case "lobby":
         if (!isBoss || r.phase !== "over") return;
         r.phase = "lobby"; r.chasers = r.chasers.filter(online);
+        return pushLobby(r);
+      case "leave":                          // 大廳 / 結算畫面才能離開(遊戲中大盜用 ✕ 結束)
+        if (r.phase !== "lobby" && r.phase !== "over") return;
+        ws._room = null;
+        if (isBoss) {                        // 大盜走了 = 房間關掉,其他人回首頁
+          r.chasers.forEach((q) => { send(q.ws, { t: "err", msg: "大盜關掉房間了", fatal: true }); if (q.ws) q.ws._room = null; });
+          r.screens.forEach((w) => { send(w, { t: "err", msg: "房間關掉了", fatal: true }); w._room = null; });
+          clearInterval(r.tick); clearTimeout(r.cdTimer); rooms.delete(r.code);
+          slog(`－ 關房 #${r.code}(大盜離開)`);
+          return;
+        }
+        r.chasers = r.chasers.filter((q) => q !== me);
         return pushLobby(r);
       case "kick":
         if (!isBoss || r.phase !== "lobby") return;

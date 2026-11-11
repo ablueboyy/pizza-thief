@@ -178,7 +178,7 @@ details[open].card summary::after{content:"－"}
 .quit:active{transform:translateY(3px);box-shadow:none}
 /* 🐙 墨汁:蓋在地圖上,手指還是點得到下面的格子 */
 .ink{position:absolute;inset:0;z-index:30;pointer-events:none;overflow:hidden}
-.ink svg{position:absolute;overflow:visible;animation:splat .32s cubic-bezier(.2,1.6,.4,1) both}
+.ink svg{position:absolute;display:block;animation:splat .32s cubic-bezier(.2,1.6,.4,1) both}
 .ink.fade svg{transition:opacity .9s;opacity:0}
 @keyframes splat{from{transform:scale(.2);opacity:0}}
 .disp{flex:0 0 34%;display:flex;align-items:center;justify-content:center;background:#fff;border:2.5px solid var(--line);border-radius:16px;transition:background .1s,border-color .1s}
@@ -207,6 +207,7 @@ body.tv .feedline{height:44px}
 body.tv .feedline span{font-size:22px}
 body.tv .hud .role{font-size:20px}
 .tvside{display:none}
+body.tv #bLeave,body.tv #bLeave2{display:none}
 body.tv #game{flex-direction:row}
 body.tv .gmain{flex:1;display:flex;flex-direction:column;min-width:0;padding-bottom:16px}
 body.tv .tvside{display:flex;flex:0 0 320px;flex-direction:column;gap:12px;padding:18px 18px 18px 0}
@@ -292,6 +293,7 @@ body.tv .tvside{display:flex;flex:0 0 320px;flex-direction:column;gap:12px;paddi
       <div class="note" id="tvHint"></div>
     </div>
     <div class="note" id="lbWait"></div>
+    <button class="btn" id="bLeave">🚪 離開房間</button>
   </div>
 </div>
 
@@ -331,6 +333,7 @@ body.tv .tvside{display:flex;flex:0 0 320px;flex-direction:column;gap:12px;paddi
     <div class="card awards" id="oAwards"></div>
     <button class="btn red hide" id="bLobby">回大廳,下一組</button>
     <div class="note" id="oWait"></div>
+    <button class="btn" id="bLeave2">🚪 離開房間</button>
   </div>
 </div>
 
@@ -350,6 +353,7 @@ $("name").value = localStorage.getItem("pt_name") || "";
 if (qs.get("join")) $("jcode").value = qs.get("join");
 
 let inkTimer = null, inkUntil = 0;
+let BUILD = null;
 let ws, role = null, code = null, ROWS = 0, COLS = 0, WALLS = [], ITEMS = {}, S = null;
 let seq = 0, opt = null, localCd = 0, lastLocalMiss = 0;   // 預測:先畫結果,伺服器確認後再對齊
 let aiming = false, endsAt = 0, cdEnds = 0, placing = -1;
@@ -384,6 +388,12 @@ $("bEasy").onclick = () => sendMsg({ t:"adj", v:-1 });
 $("bHard").onclick = () => sendMsg({ t:"adj", v: 1 });
 $("bStart").onclick = () => sendMsg({ t:"start" });
 $("bLobby").onclick = () => sendMsg({ t:"lobby" });
+function leave(){
+  if (role === "boss" && !confirm("你是大盜,離開會關掉整個房間,確定嗎?")) return;
+  sendMsg({ t:"leave" });
+  fail("");
+}
+$("bLeave").onclick = $("bLeave2").onclick = leave;
 
 // 開頁就試著接回上一局(手機鎖屏、重新整理都不會掉)
 (function boot(){
@@ -399,6 +409,9 @@ function handle(m){
       if (m.quiet) return fail("");
       if (m.fatal || $("home").classList.contains("hide") === false || !code) return fail(m.msg);
       return flash(m.msg, "bad");
+    case "hello":                                   // 伺服器更新過 → 重新整理拿新版(局會自動接回)
+      if (BUILD && m.build !== BUILD) return location.reload();
+      BUILD = m.build; return;
     case "lobby":   return drawLobby(m);
     case "countdown": return countdown(m.ms);
     case "start":   return startGame(m);
@@ -454,8 +467,6 @@ function startGame(m){
   drawBuf(); placing = -1; clearInk(); S = null; opt = null; localCd = 0;
   drawRole();
   $("tvCode").textContent = code;
-  $("items").classList.toggle("hide", role !== "boss");
-  $("bQuit").classList.toggle("hide", role !== "boss");
   $("tvLog").innerHTML = "";
   const map = $("map");
   map.style.gridTemplateColumns = `repeat(${COLS}, var(--cs))`;
@@ -475,6 +486,8 @@ function drawRole(){
   const t = $("roleTag");
   t.textContent = role === "boss" ? "🦹 大盜" : role === "chaser" ? "👨‍🍳 店員" : "📺 觀戰";
   t.className = "pill role " + (role || "") + (role === "boss" ? " hide" : "");   // 大盜那格位置留給道具
+  $("items").classList.toggle("hide", role !== "boss");
+  $("bQuit").classList.toggle("hide", role !== "boss");
 }
 function sizeMap(){
   if (!COLS) return;
@@ -490,6 +503,7 @@ const adj = (a, b) => Math.abs(Math.floor(a / COLS) - Math.floor(b / COLS)) + Ma
 
 function render(s){
   S = s;
+  if (s.me) role = s.me.role;   // 遊戲中重新整理不會經過大廳,身分要從這裡拿,不然會被當成觀戰
   if (s.me){
     // 伺服器還沒處理完我送出的操作 → 用預測的結果蓋上去,避免畫面跳回舊狀態
     if (opt && (s.me.ack || 0) < seq){
@@ -665,7 +679,8 @@ function ink(ms, quiet){
   for (let i = 0, n = 6 + Math.floor(Math.random() * 3); i < n; i++){
     const r = Math.min(W, H) * (0.13 + Math.random() * 0.14);
     const x = W * (0.08 + Math.random() * 0.84), y = H * (0.08 + Math.random() * 0.84);
-    html.push(`<svg width="1" height="1" style="left:${x}px;top:${y}px;animation-delay:${i * 70}ms;transform:rotate(${Math.random() * 360}deg)"><g fill="#1d1426" fill-opacity=".93">${blob(r)}</g></svg>`);
+    const S2 = Math.ceil(r * 1.95);   // 墨漬 + 噴出去的小墨點最遠約 1.8r
+    html.push(`<svg width="${2 * S2}" height="${2 * S2}" viewBox="${-S2} ${-S2} ${2 * S2} ${2 * S2}" style="left:${x - S2}px;top:${y - S2}px;animation-delay:${i * 70}ms"><g fill="#1d1426" fill-opacity=".93" transform="rotate(${Math.round(Math.random() * 360)})">${blob(r)}</g></svg>`);
   }
   box.innerHTML = html.join("");
   inkUntil = Date.now() + ms;
