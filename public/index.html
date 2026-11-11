@@ -117,14 +117,14 @@ details[open].card summary::after{content:"－"}
 .hud .role{font-size:14px;padding:3px 10px}
 .hud .role.boss{background:var(--c2);color:#fff}
 .hud .role.chaser{background:var(--tomato);color:#fff}
-.feedline{flex:0 0 auto;height:26px;display:flex;justify-content:center;align-items:center;padding:0 10px}
+.feedline{position:absolute;top:4px;left:0;right:0;z-index:20;pointer-events:none;height:26px;display:flex;justify-content:center;align-items:center;padding:0 10px}
 .feedline span{font-size:13px;font-weight:800;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
   background:#fff;border-radius:99px;padding:1px 12px;border:2px solid currentColor;animation:popin .35s var(--pop)}
 .feedline span:empty{display:none}
 .k-good{color:var(--basil-d)}.k-bad{color:var(--tomato-d)}.k-skill{color:#8a5ee0}.k-pizza{color:#d98a00}.k-sys{color:var(--dim)}
 
-.mapwrap{flex:1 1 0;min-height:0;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:2px 8px}
-.map{touch-action:none;display:grid;gap:3px;background:var(--crust);padding:5px;border-radius:18px;position:relative;border:3px solid var(--ol);box-shadow:0 5px 0 var(--ol)}
+.mapwrap{position:relative;flex:1 1 0;min-height:0;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:2px 6px}
+.map{touch-action:none;display:grid;gap:3px;background:var(--crust);padding:4px;border-radius:18px;position:relative;border:3px solid var(--ol);box-shadow:0 5px 0 var(--ol)}
 .cell{position:relative;border-radius:8px;background:var(--cream);display:flex;align-items:center;justify-content:center;
   font-weight:800;color:#9a7a63;cursor:default;transition:background .15s,transform .15s}
 .cell.alt{background:var(--pink)}
@@ -156,9 +156,9 @@ details[open].card summary::after{content:"－"}
 @keyframes dizzy{25%{transform:rotate(-14deg)}75%{transform:rotate(14deg)}}
 .cell.off .who{opacity:.35}
 
-.panel{flex:0 0 auto;display:flex;flex-direction:column;gap:7px;padding:8px 10px 10px;margin-top:6px;
+.panel{flex:0 0 auto;display:flex;flex-direction:column;gap:6px;padding:6px 8px 10px;margin-top:4px;
   border-top:3px solid var(--ol);border-radius:24px 24px 0 0;background:var(--card)}
-.trow{display:flex;align-items:stretch;gap:8px;height:52px}
+.trow{display:flex;align-items:stretch;gap:8px;height:46px}
 .target{flex:1 1 auto;display:flex;align-items:center;gap:8px;padding:0 2px;min-width:0}
 .target .big{font-size:32px;font-weight:800;line-height:1;background:var(--cheese);border:2.5px solid var(--ol);border-radius:14px;padding:4px 9px 1px}
 .target .sm{font-size:13px;color:var(--dim);line-height:1.4;display:flex;flex-wrap:wrap;gap:3px;align-items:center;min-width:0}
@@ -172,17 +172,18 @@ details[open].card summary::after{content:"－"}
 .item:active:not(:disabled){transform:translateY(3px);box-shadow:none}
 .item.on{background:var(--tomato);color:#fff;animation:beat .8s infinite}
 .item:disabled{opacity:.35;border-style:dashed;box-shadow:none}
-.disp{flex:0 0 40%;display:flex;align-items:center;justify-content:center;background:#fff;border:2.5px solid var(--line);border-radius:16px;transition:background .1s,border-color .1s}
+.disp{flex:0 0 34%;display:flex;align-items:center;justify-content:center;background:#fff;border:2.5px solid var(--line);border-radius:16px;transition:background .1s,border-color .1s}
 .disp .val{font-size:26px;font-weight:800;letter-spacing:3px;text-align:center}
-.disp .val.ph{color:#cdb8a5;font-size:14px;letter-spacing:0;font-weight:700}
+.disp .val.ph{color:#a8907d;font-size:14px;letter-spacing:0;font-weight:700}
 .disp.cool{border-color:var(--tomato);background:#fff0ec}
 .disp.cool .val{color:var(--tomato-d);font-size:20px;letter-spacing:0}
-.pad{display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:clamp(44px,6.6vh,58px);gap:6px}
+.pad{display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:clamp(58px,8.5vh,74px);gap:5px}
 .key{font:inherit;font-size:24px;font-weight:800;border:2.5px solid var(--ol);border-radius:14px;background:#fff;color:var(--ink);padding:0;
   box-shadow:0 3px 0 var(--ol);transition:transform .04s,box-shadow .04s,opacity .12s;touch-action:none}
 .key:active:not(:disabled),.key.down{transform:translateY(3px);box-shadow:none}
-.key.go{background:var(--basil);color:#fff;font-size:16px}
-.key.bs{background:var(--line);font-size:20px}
+.key{font-size:26px}
+.key.star{background:var(--cheese);font-size:15px;line-height:1.1}
+.key.star b{display:block;font-size:22px}
 .key:disabled{opacity:.35}
 .key.mixed{background:#ffe6c7;color:var(--tomato-d);animation:wob .45s}
 @keyframes wob{0%{transform:rotate(-9deg) scale(.86)}55%{transform:rotate(5deg) scale(1.04)}100%{transform:none}}
@@ -251,8 +252,8 @@ body.tv .tvside{display:flex;flex:0 0 320px;flex-direction:column;gap:12px;paddi
     <details class="card">
       <summary>📖 怎麼玩?</summary>
       <ul class="steps">
-        <li><span class="ic">👣</span><span>點<b>旁邊發亮的格子</b>,把格子上的數字<b>拆成質因數</b>,一次打一個、按送出。拆到剩 1 就走過去。<br><span class="eg">12</span> → 2 → 2 → 3 ✓</span></li>
-        <li><span class="ic">✨</span><span><b>質數格最快</b>:打它自己就過。但 <span class="eg">91</span> = 7×13,不是質數喔!</span></li>
+        <li><span class="ic">👣</span><span>點(或滑向)<b>旁邊發亮的格子</b>,再按下面的<b>質數按鈕</b>把數字除到剩 1,就走過去。<br><span class="eg">12</span> → 按 2 → 2 → 3 ✓</span></li>
+        <li><span class="ic">★</span><span>剩下的數<b>已經是質數</b>就按 ★ 收尾:<span class="eg">94</span> → 2 → ★(47)。<span class="eg">97</span> 直接 ★ 一下就過!但 <span class="eg">91</span> = 7×13,不是質數喔!</span></li>
         <li><span class="ic">💫</span><span>打錯會<b>暈 1 秒</b>。走過的格子數字會換新。</span></li>
         <li><span class="ic">👨‍🍳</span><span><b>店員</b>走進大盜的格子 = 抓到,店員過關!</span></li>
         <li><span class="ic">🦹</span><span><b>大盜</b>撐到時間到、或偷滿 🍕 = 大盜勝。每偷一片會撿到道具:🛵 外送車、🌶️ 辣椒粉、🪑 翻桌。</span></li>
@@ -299,8 +300,7 @@ body.tv .tvside{display:flex;flex:0 0 320px;flex-direction:column;gap:12px;paddi
       <div class="pill role" id="roleTag"></div>
       <div class="items hide" id="items"></div>
     </div>
-    <div class="feedline" id="feedline"><span></span></div>
-    <div class="mapwrap" id="mapwrap"><div class="map" id="map"></div></div>
+    <div class="mapwrap" id="mapwrap"><div class="feedline" id="feedline"><span></span></div><div class="map" id="map"></div></div>
     <div class="panel" id="panel">
       <div class="trow"><div class="target" id="target"></div><div class="disp" id="disp"><div class="val ph" id="val"></div></div></div>
       <div class="pad" id="pad"></div>
@@ -343,7 +343,7 @@ if (qs.get("join")) $("jcode").value = qs.get("join");
 
 let ws, role = null, code = null, ROWS = 0, COLS = 0, WALLS = [], ITEMS = {}, S = null;
 let seq = 0, opt = null, localCd = 0, lastLocalMiss = 0;   // 預測:先畫結果,伺服器確認後再對齊
-let aiming = false, buf = "", endsAt = 0, cdEnds = 0, placing = -1, mixTimer = null;
+let aiming = false, endsAt = 0, cdEnds = 0, placing = -1, mixTimer = null;
 
 /* ---------- 連線 ---------- */
 function connect(then){
@@ -442,7 +442,7 @@ function countdown(ms){
 function startGame(m){
   ROWS = m.rows; COLS = m.cols; WALLS = m.walls; ITEMS = m.items;
   show("game");
-  buf = ""; drawBuf(); placing = -1; unscramble(); S = null; opt = null; localCd = 0;
+  drawBuf(); placing = -1; unscramble(); S = null; opt = null; localCd = 0;
   drawRole();
   $("tvCode").textContent = code;
   $("items").classList.toggle("hide", role !== "boss");
@@ -469,7 +469,7 @@ function drawRole(){
 function sizeMap(){
   if (!COLS) return;
   const w = $("mapwrap");
-  const fw = w.clientWidth - 16 - 16, fh = w.clientHeight - 4 - 16 - 6;   // 扣掉外框、padding、陰影
+  const fw = w.clientWidth - 12 - 14, fh = w.clientHeight - 4 - 14 - 6;   // 扣掉外框、padding、陰影
   const cs = Math.max(20, Math.floor(Math.min((fw - 3 * (COLS - 1)) / COLS, (fh - 3 * (ROWS - 1)) / ROWS)));
   $("map").style.setProperty("--cs", cs + "px");
   $("map").style.fontSize = Math.round(cs * 0.38) + "px";
@@ -524,7 +524,6 @@ function render(s){
   if (me){
     cdEnds = Math.max(localCd, Date.now() + Math.max(me.cdMs, me.stunMs));
     aiming = me.aim !== null && me.aim !== undefined;
-    if (!aiming) buf = "";
     drawBuf();
     [...$("pad").children].forEach((b) => (b.disabled = Date.now() < cdEnds || !aiming));
     if (me.scrambleMs > 300 && !mixTimer) scramble(me.scrambleMs, true);  // 重連時接回辣椒粉效果
@@ -575,7 +574,6 @@ function tapCell(i){
   }
   const me = S.me;
   if (adj(me.pos, i) !== 1 || me.aim === i || !walkableHere(i)) return;
-  buf = "";
   sendMsg({ t:"aim", i, seq: ++seq });
   predict(() => {
     if (role === "boss" && me.freeMoves > 0){ me.freeMoves--; me.pos = i; me.aim = null; me.rem = 0; me.got = []; }
@@ -624,52 +622,44 @@ function drawTvSide(s){
 }
 
 /* ---------- 鍵盤 ---------- */
-const KEYS = ["1","2","3","4","5","⌫","6","7","8","9","0","送出"];
-const DIGIT_POS = [0,1,2,3,4,6,7,8,9,10];
-const DIGITS = ["1","2","3","4","5","6","7","8","9","0"];
-$("pad").innerHTML = KEYS.map((k) => `<button class="key${k === "送出" ? " go" : k === "⌫" ? " bs" : ""}" data-k="${k}">${k}</button>`).join("");
-// 手指一碰到就算(不用等放開),體感快很多
+const KEYS = ["2","3","5","7","11","13","★"];
+const keyHtml = (k) => k === "★" ? "<b>★</b>質數" : k;
+$("pad").innerHTML = KEYS.map((k) => `<button class="key${k === "★" ? " star" : ""}" data-k="${k}">${keyHtml(k)}</button>`).join("");
+// 手指一碰到就算(不用等放開),體感快很多。按一下 = 除一次,不用再按送出
 [...$("pad").children].forEach((b) => {
   b.onpointerdown = (e) => { e.preventDefault(); if (b.disabled) return; b.classList.add("down"); tap(b.dataset.k); };
   b.onpointerup = b.onpointerleave = b.onpointercancel = () => b.classList.remove("down");
 });
 function setKeys(order){
-  const btns = [...$("pad").children];
-  DIGIT_POS.forEach((pos, k) => { const b = btns[pos]; b.dataset.k = order[k]; b.textContent = order[k]; b.classList.toggle("mixed", order[k] !== DIGITS[k]); });
+  [...$("pad").children].forEach((b, k) => {
+    b.dataset.k = order[k]; b.innerHTML = keyHtml(order[k]);
+    b.classList.toggle("star", order[k] === "★"); b.classList.toggle("mixed", order[k] !== KEYS[k]);
+  });
 }
 function scramble(ms, quiet){
-  const o = DIGITS.slice();
+  const o = KEYS.slice();
   for (let i = o.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [o[i], o[j]] = [o[j], o[i]]; }
   setKeys(o);
   clearTimeout(mixTimer); mixTimer = setTimeout(unscramble, ms);
-  if (!quiet) flash("🌶️ 辣椒粉!鍵盤亂掉了", "skill");
+  if (!quiet) flash("🌶️ 辣椒粉!按鈕位置亂掉了", "skill");
 }
-function unscramble(){ clearTimeout(mixTimer); mixTimer = null; setKeys(DIGITS); }
-const physical = (d) => [...$("pad").children][DIGIT_POS[DIGITS.indexOf(d)]].dataset.k;
+function unscramble(){ clearTimeout(mixTimer); mixTimer = null; setKeys(KEYS); }
 
-function tap(k){
-  if (Date.now() < cdEnds || !aiming) return;
-  if (k === "送出") return submit();
-  if (k === "⌫"){ buf = buf.slice(0, -1); return drawBuf(); }
-  if (buf.length >= 4) return;
-  if (buf === "0") buf = "";
-  buf += k; drawBuf();
-}
 function drawBuf(){
   if (Date.now() < cdEnds) return;
   const v = $("val");
-  v.textContent = buf || (aiming ? "打一個質因數" : "先選格子");
-  v.classList.toggle("ph", !buf);
+  v.textContent = aiming ? "按質因數 👇" : "先選格子 👆";
+  v.classList.add("ph");
 }
-function submit(){
-  const v = parseInt(buf, 10);
-  buf = ""; drawBuf();
-  if (!Number.isInteger(v) || v < 2 || !S || !S.me || !aiming) return;
-  sendMsg({ t:"guess", v, seq: ++seq });
+function tap(k){
+  if (Date.now() < cdEnds || !aiming || !S || !S.me) return;
   const me = S.me;
-  if (!isPrime(v) || me.rem % v !== 0){          // 打錯:馬上暈、馬上震,不等伺服器
+  const star = k === "★", v = star ? me.rem : +k;
+  sendMsg({ t:"guess", v: star ? "star" : v, seq: ++seq });
+  const bad = star ? (!isPrime(me.rem) && `✗ ${me.rem} 不是質數喔`) : (me.rem % v !== 0 && `✗ ${me.rem} 不能被 ${v} 整除`);
+  if (bad){                                       // 按錯:馬上暈、馬上震,不等伺服器
     localCd = Date.now() + 1000; cdEnds = localCd; lastLocalMiss = Date.now();
-    flash(!isPrime(v) ? `✗ ${v} 不是質數` : `✗ ${v} 除不盡 ${me.rem}`, "bad");
+    flash(bad, "bad");
     missFx();
     return predict(() => {});
   }
@@ -678,12 +668,11 @@ function submit(){
     if (me.rem === 1){ me.pos = me.aim; me.aim = null; me.rem = 0; me.got = []; }
   });
 }
-// 桌機測試:數字/Enter/Backspace,方向鍵或 WASD 選格子
+// 桌機測試:1~7 按第幾顆按鈕(Enter/空白 = ★),方向鍵或 WASD 選格子
 addEventListener("keydown", (e) => {
   if ($("game").classList.contains("hide") || TV || !S || !S.me) return;
-  if (e.key >= "0" && e.key <= "9") return tap(physical(e.key));
-  if (e.key === "Backspace") return tap("⌫");
-  if (e.key === "Enter") return tap("送出");
+  if (e.key >= "1" && e.key <= "7") return tap([...$("pad").children][+e.key - 1].dataset.k);   // 1~7 = 由左到右第幾顆
+  if (e.key === "Enter" || e.key === " ") return tap("★");
   const dir = { ArrowUp:-COLS, w:-COLS, ArrowDown:COLS, s:COLS, ArrowLeft:-1, a:-1, ArrowRight:1, d:1 }[e.key];
   if (dir !== undefined){
     e.preventDefault();

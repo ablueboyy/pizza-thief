@@ -49,34 +49,32 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
 // 地圖:# = 桌子/烤爐(永久障礙)。1~2 個店員用小地圖,3~4 個用大地圖。
 // 直式長方形:手機是直的,寬度才是瓶頸,所以欄少列多、格子才會大
+// 比例 ≈ 手機扣掉上下面板後的地圖區(約 7:10),格子才能撐滿寬度又不被高度卡住
 const LAYOUTS = {
-  small: [            // 7 欄 × 11 列
+  small: [            // 7 欄 × 10 列
     ".......",
     ".##.##.",
     ".......",
-    ".#...#.",
+    ".#.#.#.",
     "...#...",
-    ".#...#.",
-    "...#...",
-    ".#...#.",
+    ".......",
+    ".#.#.#.",
     ".......",
     ".##.##.",
     ".......",
   ],
-  big: [              // 9 欄 × 13 列
-    ".........",
-    ".##...##.",
-    ".#.....#.",
-    "...#.#...",
-    ".........",
-    ".#..#..#.",
-    ".........",
-    ".#..#..#.",
-    ".........",
-    "...#.#...",
-    ".#.....#.",
-    ".##...##.",
-    ".........",
+  big: [              // 8 欄 × 11 列
+    "........",
+    ".##..##.",
+    ".#....#.",
+    "...##...",
+    "........",
+    ".#....#.",
+    "........",
+    "...##...",
+    ".#....#.",
+    ".##..##.",
+    "........",
   ],
 };
 const PIZZAS_ON = { small: 3, big: 4 }; // 場上同時有幾片披薩
@@ -95,21 +93,24 @@ function isPrime(n) {
 }
 const maxRun = (f) => { let best = 1, run = 1; for (let i = 1; i < f.length; i++) { run = f[i] === f[i - 1] ? run + 1 : 1; best = Math.max(best, run); } return best; };
 
+// 玩家只有 7 顆按鈕:2 3 5 7 11 13 和 ★(「剩下的已經是質數」)。
+// 所以每個數字最多只能有 1 個比 13 大的質因數 —— 那個要靠 ★ 收尾。
 // 四種地形,讓地圖有好走和難走的路:
-//   easy  兩位數合數            12 = 2×2×3
-//   mid   三位數、小質因數堆疊   210 = 2×3×5×7
-//   hard  三位數、有大質因數     437 = 19×23、143 = 11×13(看起來很像質數)
-//   prime 兩位數質數(捷徑)     97 —— 只要認得出它是質數,一下就過
+//   easy  兩位數、只有小質因數   12 → 2 2 3
+//   mid   三位數、小質因數堆疊   210 → 2 3 5 7
+//   hard  藏著大質數或很像質數   94 → 2 ★(47)、91 → 7 13(91 不是質數!)
+//   prime 兩位數質數(捷徑)     97 → ★ 一下就過
+const SMALL_PRIMES = [2, 3, 5, 7, 11, 13];
 const POOL = (() => {
   const easy = [], mid = [], hard = [], prime = [];
   for (let n = 10; n <= 999; n++) {
     const f = factorize(n);
     if (f.length === 1) { if (n <= 97) prime.push(n); continue; }
-    const mx = f[f.length - 1];
-    if (mx > 37 || maxRun(f) > 3) continue;
-    if (n < 100) easy.push(n);
-    else if ((mx >= 17 || f.length === 2) && f.length <= 3) hard.push(n);
-    else if (f.length >= 3 && f.length <= 4) mid.push(n);
+    const big = f.filter((x) => x > 13);
+    if (big.length > 1 || big[0] > 97 || f.length > 4 || maxRun(f) > 3) continue;   // 大質數限兩位數,認得出來才公平
+    if (big.length === 1 || (f.length === 2 && f[0] >= 7)) { if (f.length <= 3 && n <= 300) hard.push(n); }   // 太大的心算不動
+    else if (n < 100) easy.push(n);
+    else if (f.length >= 3) mid.push(n);
   }
   return { easy, mid, hard, prime };
 })();
@@ -282,11 +283,17 @@ function onGuess(r, p, v) {
   if (r.phase !== "playing" || p.aim === null) return;
   const now = Date.now();
   if (now < p.cdUntil || now < p.stunUntil) return;
-  v = Number(v);
-  if (!Number.isInteger(v) || v < 2 || v > 9999) return;
-  if (!isPrime(v) || p.rem % v !== 0) {
+  let bad = null;
+  if (v === "star") {                          // ★ = 「剩下的這個數是質數」
+    if (isPrime(p.rem)) v = p.rem; else bad = `✗ ${p.rem} 不是質數喔`;
+  } else {
+    v = Number(v);
+    if (!SMALL_PRIMES.includes(v)) return;
+    if (p.rem % v !== 0) bad = `✗ ${p.rem} 不能被 ${v} 整除`;
+  }
+  if (bad) {
     p.cdUntil = now + MISS_CD; p.misses++;
-    note(p, !isPrime(v) ? `✗ ${v} 不是質數` : `✗ ${v} 除不盡 ${p.rem}`, "bad");
+    note(p, bad, "bad");
     send(p.ws, { t: "fx", kind: "miss" });
     setTimeout(() => pushState(r), MISS_CD + 30);  // 暈完再推一次,讓別人畫面上的暈眩圈消失
     return pushState(r);
