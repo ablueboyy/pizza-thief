@@ -31,8 +31,7 @@ const wss = new WebSocketServer({ server });
 const COUNTDOWN    = 3000;
 const MISS_CD      = 1000;  // 打錯:暈 1 秒
 const INK_MS       = 6000;  // 🐙 墨汁噴在店員螢幕上多久
-const TABLE_MS     = 12000; // 🪑 桌子維持多久
-const TABLE_RANGE  = 2;     // 🪑 可以放多遠
+const TABLE_RANGE  = 1;     // 🪑 只能放在大盜旁邊(上下左右一格)
 const SCOOT_MOVES  = 3;     // 🛵 免解題的步數
 const MAX_CHASERS  = 4;
 
@@ -125,7 +124,7 @@ function genNum() {
 
 // ================= 道具 =================
 const ITEMS = {
-  table: { name: "翻桌",   desc: "在 2 格內放一張桌子擋路 12 秒" },
+  table: { name: "翻桌",   desc: "在旁邊一格放一張桌子,永久擋路" },
   scoot: { name: "外送車", desc: "接下來 3 步免解題" },
   ink:   { name: "墨汁",   desc: "所有店員的螢幕被噴墨汁 6 秒" },
 };
@@ -335,8 +334,9 @@ function onItem(r, p, slot, target) {
     if (!Number.isInteger(target) || target < 0 || target >= r.rows * r.cols) return;
     if (r.walls[target] || r.tables.has(target) || r.pizzas.has(target)) return note(p, "那格不能放桌子", "bad");
     if (people(r).some((q) => q.pos === target)) return note(p, "有人站在那裡", "bad");
-    if (dist(r, p.pos, target) > TABLE_RANGE) return note(p, `只能放在 ${TABLE_RANGE} 格以內`, "bad");
-    r.tables.set(target, now + TABLE_MS);
+    if (dist(r, p.pos, target) > TABLE_RANGE) return note(p, "只能放在你旁邊一格", "bad");
+    if (cutsMap(r, target)) return note(p, "放這裡會把路完全堵死,換一格", "bad");
+    r.tables.set(target, Infinity);   // 永久:這局結束前都不會消失
     r.chasers.forEach((q) => { if (q.aim === target) { q.aim = null; q.rem = 0; q.got = []; note(q, "前面被翻桌擋住了!", "bad"); } });
     log(r, "大盜翻桌了!", "skill");
   } else if (key === "scoot") {
@@ -349,6 +349,23 @@ function onItem(r, p, slot, target) {
   p.items[slot] = null;
   broadcast(r, { t: "fx", kind: "item", item: key });   // 讓每個人的手機都響道具音效
   pushState(r);
+}
+// 桌子是永久的,所以不能讓它把地圖切成兩塊(不然會有人或披薩被永遠關在死角)
+function cutsMap(r, block) {
+  const N = r.rows * r.cols;
+  const free = (i) => i !== block && !r.walls[i] && !r.tables.has(i);
+  let total = 0, start = -1;
+  for (let i = 0; i < N; i++) if (free(i)) { total++; if (start < 0) start = i; }
+  if (start < 0) return true;
+  const seen = new Uint8Array(N), q = [start]; seen[start] = 1;
+  let reached = 0;
+  while (q.length) {
+    const i = q.pop(); reached++;
+    const c = i % r.cols;
+    for (const j of [i - r.cols, i + r.cols, c > 0 ? i - 1 : -1, c < r.cols - 1 ? i + 1 : -1])
+      if (j >= 0 && j < N && !seen[j] && free(j)) { seen[j] = 1; q.push(j); }
+  }
+  return reached < total;
 }
 function endGame(r, why, catcher) {
   if (r.phase !== "playing") return;

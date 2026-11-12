@@ -280,7 +280,7 @@ body.tv .tvside{display:flex;flex:0 0 320px;flex-direction:column;gap:12px;paddi
         <li><span class="ic" style="font-weight:800">★</span><span>剩下的數<b>已經是質數</b>就按 ★ 收尾:<span class="eg">94</span> → 2 → ★(47)。<span class="eg">97</span> 直接 ★ 一下就過!但 <span class="eg">91</span> = 7×13,不是質數喔!</span></li>
         <li><span class="ic" data-art="stars" style="padding:5px"></span><span>打錯會<b>暈 1 秒</b>。走過的格子數字會換新。</span></li>
         <li><span class="ic" data-art="chef"></span><span><b>店員</b>走進大盜的格子 = 抓到,店員過關!</span></li>
-        <li><span class="ic" data-art="thief"></span><span><b>大盜</b>撐到時間到、或偷滿 <i class="i" data-art="pizza"></i> = 大盜勝。三個道具<b>各能用一次</b>:<i class="i" data-art="scoot"></i>外送車(3 步免解題)、<i class="i" data-art="ink"></i>墨汁(店員螢幕被噴黑)、<i class="i" data-art="table"></i>翻桌(擋路)。</span></li>
+        <li><span class="ic" data-art="thief"></span><span><b>大盜</b>撐到時間到、或偷滿 <i class="i" data-art="pizza"></i> = 大盜勝。三個道具<b>各能用一次</b>:<i class="i" data-art="scoot"></i>外送車(3 步免解題)、<i class="i" data-art="ink"></i>墨汁(店員螢幕被噴黑)、<i class="i" data-art="table"></i>翻桌(永久擋路)。</span></li>
       </ul>
     </details>
     <div class="note"><a href="#" id="bTv">大螢幕觀戰</a>(先在房號欄輸入房號)</div>
@@ -580,7 +580,7 @@ function render(s){
     if (pizzas.has(i)) cls += " haspz";
     if (p) cls += " occ" + (p.stun ? " stunned" : "") + (p.online ? "" : " off");
     if (me && me.pos === i) cls += " me";
-    if (me && placing >= 0) { if (adj(me.pos, i) <= 2 && !p && !tables.has(i) && !pizzas.has(i) && i !== me.pos) cls += " place"; }
+    if (me && placing >= 0) { if (adj(me.pos, i) === 1 && !p && !tables.has(i) && !pizzas.has(i) && i !== me.pos) cls += " place"; }
     else if (me && me.aim === i) cls += " aim";
     else if (canGo) cls += role === "chaser" && bossHere ? " catch" : " can";
     if (c.className !== cls) c.className = cls;
