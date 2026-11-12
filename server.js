@@ -124,9 +124,9 @@ function genNum() {
 
 // ================= 道具 =================
 const ITEMS = {
-  table: { emoji: "🪑", name: "翻桌",   desc: "在 2 格內放一張桌子擋路 12 秒" },
-  scoot: { emoji: "🛵", name: "外送車", desc: "接下來 3 步免解題" },
-  ink:   { emoji: "🐙", name: "墨汁",   desc: "所有店員的螢幕被噴墨汁 6 秒" },
+  table: { name: "翻桌",   desc: "在 2 格內放一張桌子擋路 12 秒" },
+  scoot: { name: "外送車", desc: "接下來 3 步免解題" },
+  ink:   { name: "墨汁",   desc: "所有店員的螢幕被噴墨汁 6 秒" },
 };
 const ITEM_KEYS = Object.keys(ITEMS);
 
@@ -319,7 +319,7 @@ function doMove(r, p) {
   const now = Date.now();
   if (p.role === "boss" && r.pizzas.has(idx)) {
     r.pizzas.delete(idx); p.pizzas++;
-    log(r, `🍕 大盜偷到第 ${p.pizzas} 片披薩${p.pizzas < r.need ? `(還差 ${r.need - p.pizzas} 片)` : ""}`, "pizza");
+    log(r, `大盜偷到第 ${p.pizzas} 片披薩${p.pizzas < r.need ? `(還差 ${r.need - p.pizzas} 片)` : ""}`, "pizza");
     if (p.pizzas >= r.need) return endGame(r, "pizza");
     spawnPizza(r);
   }
@@ -336,16 +336,17 @@ function onItem(r, p, slot, target) {
     if (people(r).some((q) => q.pos === target)) return note(p, "有人站在那裡", "bad");
     if (dist(r, p.pos, target) > TABLE_RANGE) return note(p, `只能放在 ${TABLE_RANGE} 格以內`, "bad");
     r.tables.set(target, now + TABLE_MS);
-    r.chasers.forEach((q) => { if (q.aim === target) { q.aim = null; q.rem = 0; q.got = []; note(q, "🪑 前面被翻桌擋住了!", "bad"); } });
-    log(r, "🪑 大盜翻桌了!", "skill");
+    r.chasers.forEach((q) => { if (q.aim === target) { q.aim = null; q.rem = 0; q.got = []; note(q, "前面被翻桌擋住了!", "bad"); } });
+    log(r, "大盜翻桌了!", "skill");
   } else if (key === "scoot") {
     p.freeMoves += SCOOT_MOVES;
-    log(r, `🛵 大盜騎上外送車,接下來 ${SCOOT_MOVES} 步免解題!`, "skill");
+    log(r, `大盜騎上外送車,接下來 ${SCOOT_MOVES} 步免解題!`, "skill");
   } else if (key === "ink") {
     r.chasers.forEach((q) => { q.inkUntil = now + INK_MS; send(q.ws, { t: "fx", kind: "ink", ms: INK_MS }); });
-    log(r, "🐙 大盜噴墨汁!店員什麼都看不清楚", "skill");
+    log(r, "大盜噴墨汁!店員什麼都看不清楚", "skill");
   }
   p.items[slot] = null;
+  broadcast(r, { t: "fx", kind: "item", item: key });   // 讓每個人的手機都響道具音效
   pushState(r);
 }
 function endGame(r, why, catcher) {
@@ -475,7 +476,7 @@ wss.on("connection", (ws) => {
     // 遊戲中斷線先保留位置(手機螢幕關掉很常見),重新打開網頁會自動接回去
     if (r.phase === "lobby" && p.role === "chaser") r.chasers = r.chasers.filter((q) => q !== p);
     if (r.phase === "lobby") pushLobby(r);   // 結算畫面時不要推大廳,否則大家的結算會被瞬間蓋掉
-    else if (r.phase === "playing") { log(r, `📴 ${p.name} 斷線了`, "bad"); pushState(r); }
+    else if (r.phase === "playing") { log(r, `${p.name} 斷線了`, "bad"); pushState(r); }
   });
 });
 

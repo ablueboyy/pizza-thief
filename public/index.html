@@ -14,11 +14,12 @@
   --bg:#fff4e4; --card:#fffdf8; --ink:#4a2c1d; --ol:#4a2c1d; --dim:#a8907d; --line:#f1dcc6;
   --tomato:#ff6b57; --tomato-d:#e0503d; --cheese:#ffd15c; --cheese-d:#f0b429; --basil:#5cc98a; --basil-d:#3fa86d;
   --crust:#f2b872; --pink:#ffe0d8; --cream:#fffaf0;
-  --c0:#ff8fb1; --c1:#5cb8ff; --c2:#b48cff; --c3:#3fd0bd;
+  --c0:#ff8fb1; --c1:#5cb8ff; --c2:#ffa94d; --c3:#3fd0bd; --thief:#b48cff;
   --pop:cubic-bezier(.34,1.56,.64,1);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body,.btn,.key,.cell,.item{touch-action:manipulation}
+/* 全部元素都關掉「點兩下放大」(iPhone 不理 viewport 的 user-scalable=no);地圖和按鍵另外設 none */
+*{touch-action:manipulation}
 .btn,.key,.cell,.item{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 html,body{height:100%;height:100dvh;overscroll-behavior:none}
 body{color:var(--ink);
@@ -27,6 +28,9 @@ body{color:var(--ink);
   -webkit-font-smoothing:antialiased;display:flex;flex-direction:column;
   padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
 .hide{display:none !important}
+.art{display:block;width:100%;height:100%;overflow:visible}
+.i{display:inline-block;width:1.3em;height:1.3em;vertical-align:-.3em;flex:0 0 auto}
+.sndbtn{font:inherit;font-size:13px;font-weight:800;color:var(--dim);background:none;border:none;cursor:pointer;padding:4px 8px}
 .screen{flex:1;min-height:0;display:flex;flex-direction:column}
 .mid{align-items:center;padding:22px 18px;overflow-y:auto}
 .mid>*{margin:auto 0}
@@ -59,12 +63,12 @@ input::placeholder{color:#d9c6b4;font-weight:500}
 
 /* ---- 首頁 ---- */
 .hero{text-align:center}
-.hero .logo{font-size:72px;line-height:1;display:inline-block;filter:drop-shadow(0 4px 0 rgba(74,44,29,.18))}
+.hero .logo{width:112px;height:112px;display:inline-block;filter:drop-shadow(0 5px 0 rgba(74,44,29,.18))}
 .hero h1{font-size:38px;font-weight:800;line-height:1.05;margin-top:6px;letter-spacing:2px}
 .hero .sub{font-size:12px;color:var(--tomato-d);font-weight:800;letter-spacing:6px;margin-top:2px}
 .roles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .role-card{display:flex;flex-direction:column;gap:8px;text-align:center}
-.role-card .face{font-size:40px;line-height:1}
+.role-card .face{width:64px;height:64px;margin:0 auto}
 .role-card .t{font-size:18px;font-weight:800}
 .role-card .d{font-size:12px;color:var(--dim);line-height:1.45;flex:1}
 .role-card.chef{background:#fff1ec}
@@ -88,7 +92,8 @@ details[open].card summary::after{content:"－"}
 .plist{display:flex;flex-direction:column;gap:6px}
 .prow{display:flex;align-items:center;gap:10px;padding:5px 12px 5px 6px;border-radius:16px;background:#fff;border:2.5px solid var(--line);font-weight:800}
 .ava{flex:0 0 32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;border:2.5px solid var(--ol);background:#fff}
-.ava.boss{background:var(--c2)}
+.ava.boss{background:var(--thief)}
+.ava.t{border:none;background:none !important;flex-basis:36px;height:36px}
 .prow .x{margin-left:auto;font-size:13px;color:var(--dim);border:none;background:none;cursor:pointer;font:inherit;font-weight:700}
 .prow.off{opacity:.45}
 .prow.empty{border-style:dashed;background:transparent;color:var(--dim);font-weight:700}
@@ -101,21 +106,22 @@ details[open].card summary::after{content:"－"}
 #count{justify-content:center;align-items:center}
 #count .num{font-size:140px;font-weight:800;color:var(--tomato);line-height:1;text-shadow:0 6px 0 var(--ol)}
 #count .num.tick{animation:popin .5s var(--pop)}
-#count .note{font-size:20px;font-weight:800;color:var(--ink)}
+#count .note{font-size:20px;font-weight:800;color:var(--ink);display:flex;flex-direction:column;align-items:center;gap:10px}
+#count .note .tk{width:96px;height:96px}
 
 /* ---- 遊戲 ---- */
 #game{padding:0}
 .hud{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:8px 10px 4px}
 .pill{display:flex;align-items:center;gap:4px;background:#fff;border:2.5px solid var(--ol);border-radius:999px;padding:1px 12px;
   font-weight:800;box-shadow:0 3px 0 var(--ol);white-space:nowrap}
-.hud .clock{font-size:21px;min-width:68px;justify-content:center;padding:1px 8px}
+.hud .clock{font-size:21px;gap:5px;min-width:68px;justify-content:center;padding:1px 8px}
 .hud .clock.low{background:var(--tomato);color:#fff;animation:beat 1s infinite}
 @keyframes beat{50%{transform:scale(1.07)}}
 .hud .pz{font-size:18px;flex:1;min-width:0;gap:8px}
 .bar{flex:1;height:10px;border-radius:99px;background:var(--line);overflow:hidden;min-width:20px}
 .bar i{display:block;height:100%;background:var(--cheese-d);border-radius:99px;transition:width .4s var(--pop)}
 .hud .role{font-size:14px;padding:3px 10px}
-.hud .role.boss{background:var(--c2);color:#fff}
+.hud .role.boss{background:var(--thief);color:#fff}
 .hud .role.chaser{background:var(--tomato);color:#fff}
 .feedline{position:absolute;top:4px;left:0;right:0;z-index:20;pointer-events:none;height:26px;display:flex;justify-content:center;align-items:center;padding:0 10px}
 .feedline span{font-size:13px;font-weight:800;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
@@ -124,35 +130,39 @@ details[open].card summary::after{content:"－"}
 .k-good{color:var(--basil-d)}.k-bad{color:var(--tomato-d)}.k-skill{color:#8a5ee0}.k-pizza{color:#d98a00}.k-sys{color:var(--dim)}
 
 .mapwrap{position:relative;flex:1 1 0;min-height:0;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:2px 6px}
-.map{touch-action:none;display:grid;gap:3px;background:var(--crust);padding:4px;border-radius:18px;position:relative;border:3px solid var(--ol);box-shadow:0 5px 0 var(--ol)}
-.cell{position:relative;border-radius:8px;background:var(--cream);display:flex;align-items:center;justify-content:center;
+/* 地板磁磚縫的顏色 = 地圖底色;上面一條紅白遮雨棚,看起來像店門口 */
+.map{touch-action:none;display:grid;gap:3px;background:#e7c9a6;padding:4px;border-radius:6px 6px 16px 16px;position:relative;border:3px solid var(--ol);box-shadow:0 5px 0 var(--ol);margin-top:30px}
+.map::before{content:"";position:absolute;left:-10px;right:-10px;top:-33px;height:25px;border:3px solid var(--ol);border-radius:12px 12px 4px 4px;z-index:6;
+  background:repeating-linear-gradient(90deg,var(--tomato) 0 20px,#fffaf0 20px 40px);pointer-events:none}
+.map::after{content:"";position:absolute;left:-7px;right:-7px;top:-11px;height:12px;z-index:6;pointer-events:none;
+  background:radial-gradient(circle at 10px 0,var(--tomato) 8.5px,var(--ol) 9px 11px,transparent 11.5px) 0 0/40px 12px repeat-x,
+             radial-gradient(circle at 30px 0,#fffaf0 8.5px,var(--ol) 9px 11px,transparent 11.5px) 0 0/40px 12px repeat-x}
+.cell{position:relative;border-radius:5px;background:#fff8ec;display:flex;align-items:center;justify-content:center;
   font-weight:800;color:#9a7a63;cursor:default;transition:background .15s,transform .15s}
-.cell.alt{background:var(--pink)}
+.cell.alt{background:#f8e2cb}
 .cell .n{position:relative;z-index:1;line-height:1}
-.cell.wall{background:repeating-linear-gradient(0deg,#a8653f 0 30%,#8d5133 30% 34%) !important;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18);color:transparent}
-.cell.wall::after{content:"🔥";font-size:.6em;opacity:.8}
-.cell.tbl{background:#c98a5c !important}
+.cell.wall{background:none !important;overflow:hidden;color:transparent}
+.cell.wall .art{position:absolute;inset:0}
+.cell.tbl{background:#f3d2b3 !important}
 .cell.tbl .n{opacity:0}
-.cell.tbl::after{content:"🪑";position:absolute;font-size:1.4em;animation:popin .4s var(--pop)}
+.cell.tbl::after{content:"";position:absolute;inset:4%;background:var(--art-table) center/contain no-repeat;animation:popin .4s var(--pop)}
 .cell.can{background:#fff1b0 !important;box-shadow:inset 0 0 0 2.5px var(--cheese-d);cursor:pointer;color:var(--ink)}
 .cell.can:active{transform:scale(.92)}
 .cell.catch{background:#ffd1c9 !important;box-shadow:inset 0 0 0 3px var(--tomato);cursor:pointer;animation:catchme .8s infinite}
 @keyframes catchme{50%{box-shadow:inset 0 0 0 5px var(--tomato)}}
 .cell.aim{background:var(--cheese) !important;box-shadow:inset 0 0 0 3px var(--ol);color:var(--ink);transform:scale(1.05);z-index:4}
 .cell.place{background:#ffe0d8 !important;box-shadow:inset 0 0 0 2.5px var(--tomato);cursor:pointer}
-.cell .pz{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2.1em;animation:bob 1.4s ease-in-out infinite;opacity:.9}
+.cell .pz{position:absolute;inset:6%;animation:bob 1.4s ease-in-out infinite;filter:drop-shadow(0 2px 0 rgba(74,44,29,.25))}
 @keyframes bob{50%{transform:translateY(-7%) rotate(10deg)}}
 .cell.haspz .n{z-index:3;text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 3px #fff;color:var(--ink)}
-.cell .who{position:absolute;inset:9%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.75em;z-index:2;
-  border:2.5px solid var(--ol);background:#fff;box-shadow:0 2px 0 var(--ol);animation:popin .3s var(--pop)}
-.cell .who.boss{background:var(--c2)}
+.cell .who{position:absolute;inset:3%;border-radius:50%;z-index:2;animation:popin .3s var(--pop);filter:drop-shadow(0 2px 0 rgba(74,44,29,.35))}
 .cell.occ .n{position:absolute;bottom:-3px;right:-3px;font-size:.62em;z-index:3;background:#fff;border:2px solid var(--ol);border-radius:7px;padding:0 3px}
 .cell .tag{position:absolute;top:-4px;left:50%;transform:translateX(-50%);font-size:.55em;font-weight:800;color:#fff;border-radius:6px;padding:0 4px;
   z-index:5;line-height:1.35;border:1.5px solid var(--ol);white-space:nowrap}
 .cell.me .who{box-shadow:0 0 0 3px #fff,0 0 0 6px var(--tomato);animation:mering 1.2s ease-in-out infinite}
 @keyframes mering{50%{box-shadow:0 0 0 3px #fff,0 0 0 8px rgba(255,107,87,.35)}}
 .cell.stunned .who{animation:dizzy .9s ease-in-out infinite}
-.cell.stunned::before{content:"💫";position:absolute;top:-8%;right:-6%;font-size:.9em;z-index:6}
+.cell.stunned::before{content:"";position:absolute;top:-14%;right:-12%;width:58%;height:58%;z-index:6;background:var(--art-stars) center/contain no-repeat;animation:dizzy .9s ease-in-out infinite}
 @keyframes dizzy{25%{transform:rotate(-14deg)}75%{transform:rotate(14deg)}}
 .cell.off .who{opacity:.35}
 
@@ -168,7 +178,7 @@ details[open].card summary::after{content:"－"}
 .items{flex:0 0 auto;display:flex;gap:4px}
 .item{font:inherit;min-width:42px;border:2.5px solid var(--ol);background:#fff;border-radius:12px;padding:0 4px;font-size:10px;font-weight:800;
   cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 3px 0 var(--ol);height:42px;line-height:1.05;color:var(--ink)}
-.item .e{font-size:18px}
+.item .e{width:22px;height:22px;display:block}
 .item:active:not(:disabled){transform:translateY(3px);box-shadow:none}
 .item.on{background:var(--tomato);color:#fff;animation:beat .8s infinite}
 .item:disabled{opacity:.35;border-style:dashed;box-shadow:none}
@@ -182,10 +192,11 @@ details[open].card summary::after{content:"－"}
 .ink.fade svg{transition:opacity .9s;opacity:0}
 @keyframes splat{from{transform:scale(.2);opacity:0}}
 .disp{flex:0 0 34%;display:flex;align-items:center;justify-content:center;background:#fff;border:2.5px solid var(--line);border-radius:16px;transition:background .1s,border-color .1s}
-.disp .val{font-size:26px;font-weight:800;letter-spacing:3px;text-align:center}
+.disp .val{display:flex;align-items:center;gap:4px;font-size:26px;font-weight:800;letter-spacing:3px;text-align:center}
 .disp .val.ph{color:#a8907d;font-size:14px;letter-spacing:0;font-weight:700}
 .disp.cool{border-color:var(--tomato);background:#fff0ec}
 .disp.cool .val{color:var(--tomato-d);font-size:20px;letter-spacing:0}
+.disp .val .i{width:24px;height:24px}
 .pad{display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:clamp(58px,8.5vh,74px);gap:5px}
 .key{font:inherit;font-size:24px;font-weight:800;border:2.5px solid var(--ol);border-radius:14px;background:#fff;color:var(--ink);padding:0;
   box-shadow:0 3px 0 var(--ol);transition:transform .04s,box-shadow .04s,opacity .12s;touch-action:none}
@@ -218,7 +229,11 @@ body.tv .tvside{display:flex;flex:0 0 320px;flex-direction:column;gap:12px;paddi
 
 /* ---- 結算 ---- */
 .banner{text-align:center}
-.banner .big{font-size:76px;line-height:1;display:inline-block}
+.banner .big{width:150px;height:150px;display:inline-block;position:relative}
+.banner .big .main{position:absolute;inset:0}
+.banner .big .side{position:absolute;width:52%;height:52%;right:-14%;bottom:-6%;transform:rotate(12deg)}
+.banner .big .sp{position:absolute;width:24%;height:24%;animation:twinkle 1.2s ease-in-out infinite}
+@keyframes twinkle{50%{transform:scale(.5) rotate(40deg);opacity:.6}}
 .result{font-size:28px;font-weight:800;text-align:center;line-height:1.3}
 .subres{font-size:15px;text-align:center;color:#8a6f5c;line-height:1.7;font-weight:700}
 .stats{width:100%;border-collapse:collapse;font-size:15px;font-weight:700}
@@ -227,6 +242,7 @@ body.tv .tvside{display:flex;flex:0 0 320px;flex-direction:column;gap:12px;paddi
 .stats td:first-child{text-align:left}
 .stats th{color:var(--dim);font-size:13px}
 .stats tr.mine td{background:#fff1b0}
+.awards b{color:var(--tomato-d)}
 .awards{display:flex;flex-direction:column;gap:6px;font-size:15px;font-weight:800;line-height:1.6;background:#fff8dc}
 </style>
 </head>
@@ -236,21 +252,21 @@ body.tv .tvside{display:flex;flex:0 0 320px;flex-direction:column;gap:12px;paddi
 <div id="home" class="screen mid">
   <div class="sheet stack">
     <div class="hero">
-      <div class="logo wobble">🍕</div>
+      <div class="logo wobble" data-art="logo"></div>
       <h1>披薩大盜</h1>
       <div class="sub">PIZZA THIEF</div>
     </div>
-    <input id="name" maxlength="8" placeholder="先輸入你的名字 ✏️" autocomplete="off">
+    <input id="name" maxlength="8" placeholder="先輸入你的名字" autocomplete="off">
     <div class="roles">
       <div class="card role-card chef">
-        <div class="face">👨‍🍳</div>
+        <div class="face" data-art="chef"></div>
         <div class="t">當店員</div>
         <div class="d">抓住大盜!<br>輸入大盜給你的房號</div>
         <input id="jcode" maxlength="4" inputmode="numeric" placeholder="房號">
         <button class="btn red" id="bJoin">加入</button>
       </div>
       <div class="card role-card thief">
-        <div class="face">🦹</div>
+        <div class="face" data-art="thief"></div>
         <div class="t">當大盜</div>
         <div class="d">偷披薩、別被抓!<br>你開房,店員來加入</div>
         <button class="btn yellow" id="bCreate" style="margin-top:auto">開房</button>
@@ -258,16 +274,17 @@ body.tv .tvside{display:flex;flex:0 0 320px;flex-direction:column;gap:12px;paddi
     </div>
     <div class="err" id="err"></div>
     <details class="card">
-      <summary>📖 怎麼玩?</summary>
+      <summary>怎麼玩?</summary>
       <ul class="steps">
-        <li><span class="ic">👣</span><span>點(或滑向)<b>旁邊發亮的格子</b>,再按下面的<b>質數按鈕</b>把數字除到剩 1,就走過去。<br><span class="eg">12</span> → 按 2 → 2 → 3 ✓</span></li>
-        <li><span class="ic">★</span><span>剩下的數<b>已經是質數</b>就按 ★ 收尾:<span class="eg">94</span> → 2 → ★(47)。<span class="eg">97</span> 直接 ★ 一下就過!但 <span class="eg">91</span> = 7×13,不是質數喔!</span></li>
-        <li><span class="ic">💫</span><span>打錯會<b>暈 1 秒</b>。走過的格子數字會換新。</span></li>
-        <li><span class="ic">👨‍🍳</span><span><b>店員</b>走進大盜的格子 = 抓到,店員過關!</span></li>
-        <li><span class="ic">🦹</span><span><b>大盜</b>撐到時間到、或偷滿 🍕 = 大盜勝。三個道具<b>各能用一次</b>:🛵 外送車(3 步免解題)、🐙 墨汁(店員螢幕被噴黑)、🪑 翻桌(擋路)。</span></li>
+        <li><span class="ic" style="font-weight:800">走</span><span>點(或滑向)<b>旁邊發亮的格子</b>,再按下面的<b>質數按鈕</b>把數字除到剩 1,就走過去。<br><span class="eg">12</span> → 按 2 → 2 → 3 ✓</span></li>
+        <li><span class="ic" style="font-weight:800">★</span><span>剩下的數<b>已經是質數</b>就按 ★ 收尾:<span class="eg">94</span> → 2 → ★(47)。<span class="eg">97</span> 直接 ★ 一下就過!但 <span class="eg">91</span> = 7×13,不是質數喔!</span></li>
+        <li><span class="ic" data-art="stars" style="padding:5px"></span><span>打錯會<b>暈 1 秒</b>。走過的格子數字會換新。</span></li>
+        <li><span class="ic" data-art="chef"></span><span><b>店員</b>走進大盜的格子 = 抓到,店員過關!</span></li>
+        <li><span class="ic" data-art="thief"></span><span><b>大盜</b>撐到時間到、或偷滿 <i class="i" data-art="pizza"></i> = 大盜勝。三個道具<b>各能用一次</b>:<i class="i" data-art="scoot"></i>外送車(3 步免解題)、<i class="i" data-art="ink"></i>墨汁(店員螢幕被噴黑)、<i class="i" data-art="table"></i>翻桌(擋路)。</span></li>
       </ul>
     </details>
-    <div class="note"><a href="#" id="bTv">📺 大螢幕觀戰</a>(先在房號欄輸入房號)</div>
+    <div class="note"><a href="#" id="bTv">大螢幕觀戰</a>(先在房號欄輸入房號)</div>
+    <div class="note"><button class="sndbtn" data-snd></button></div>
   </div>
 </div>
 
@@ -293,7 +310,8 @@ body.tv .tvside{display:flex;flex:0 0 320px;flex-direction:column;gap:12px;paddi
       <div class="note" id="tvHint"></div>
     </div>
     <div class="note" id="lbWait"></div>
-    <button class="btn" id="bLeave">🚪 離開房間</button>
+    <button class="btn" id="bLeave">離開房間</button>
+    <div class="note"><button class="sndbtn" data-snd></button></div>
   </div>
 </div>
 
@@ -304,8 +322,8 @@ body.tv .tvside{display:flex;flex:0 0 320px;flex-direction:column;gap:12px;paddi
 <div id="game" class="screen hide">
   <div class="gmain">
     <div class="hud">
-      <div class="pill clock" id="clock">⏱ 0</div>
-      <div class="pill pz"><span id="pzCount">🍕 0/6</span><div class="bar"><i id="pzBar" style="width:0"></i></div></div>
+      <div class="pill clock" id="clock"><i class="i" data-art="clock"></i><span id="clockN">0</span></div>
+      <div class="pill pz"><span id="pzCount" style="display:flex;align-items:center;gap:4px"><i class="i" data-art="pizza"></i><span id="pzN">0/6</span></span><div class="bar"><i id="pzBar" style="width:0"></i></div></div>
       <div class="pill role" id="roleTag"></div>
       <div class="items hide" id="items"></div>
       <button class="quit hide" id="bQuit" title="結束這局">✕</button>
@@ -326,23 +344,47 @@ body.tv .tvside{display:flex;flex:0 0 320px;flex-direction:column;gap:12px;paddi
 <!-- ============ 結算 ============ -->
 <div id="over" class="screen mid hide">
   <div class="sheet stack">
-    <div class="banner"><div class="big popin" id="oEmoji">🎉</div></div>
+    <div class="banner"><div class="big popin" id="oEmoji"></div></div>
     <div class="result" id="oTitle"></div>
     <div class="subres" id="oSub"></div>
     <div class="card"><table class="stats" id="oStats"></table></div>
     <div class="card awards" id="oAwards"></div>
     <button class="btn red hide" id="bLobby">回大廳,下一組</button>
     <div class="note" id="oWait"></div>
-    <button class="btn" id="bLeave2">🚪 離開房間</button>
+    <button class="btn" id="bLeave2">離開房間</button>
   </div>
 </div>
 
+<script src="art.js"></script>
+<script src="sfx.js"></script>
 <script>
 const $ = (id) => document.getElementById(id);
 const SCREENS = ["home","lobby","count","game","over"];
 const show = (n) => SCREENS.forEach((s) => $(s).classList.toggle("hide", s !== n));
 const CCOL = ["var(--c0)","var(--c1)","var(--c2)","var(--c3)"];
+const CHEX = ["#ff8fb1","#5cb8ff","#ffa94d","#3fd0bd"], THIEF_BG = "#b48cff";   // 插圖用(SVG 屬性不吃 CSS 變數)
+const tokenOf = (p, mood) => p.role === "boss" ? ART.thief(THIEF_BG, mood) : ART.chef(CHEX[p.idx] || CHEX[0], mood);
+const icon = (name) => `<i class="i">${ART[name]()}</i>`;
+// 靜態 HTML 裡的 data-art 填上插圖;CSS 用得到的(桌子、暈眩星星)做成背景圖
+document.querySelectorAll("[data-art]").forEach((el) => {
+  const k = el.dataset.art;
+  el.innerHTML = k === "thief" ? ART.thief(THIEF_BG) : k === "chef" ? ART.chef(CHEX[0]) : ART[k]();
+});
+document.documentElement.style.setProperty("--art-table", ART.url(ART.table()));
+document.documentElement.style.setProperty("--art-stars", ART.url(ART.stars()));
+function drawSnd(){ document.querySelectorAll("[data-snd]").forEach((b) => (b.textContent = SFX.on ? "音效:開" : "音效:關")); }
+document.querySelectorAll("[data-snd]").forEach((b) => (b.onclick = () => { SFX.toggle(); drawSnd(); }));
+drawSnd();
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
+
+// iPhone 保險:快速連點兩下不放大、兩指不縮放(輸入框除外,才點得進去打字)
+let lastTouchEnd = 0;
+document.addEventListener("touchend", (e) => {
+  const now = Date.now();
+  if (now - lastTouchEnd < 350 && !e.target.closest("input")) e.preventDefault();
+  lastTouchEnd = now;
+}, { passive: false });
+["gesturestart", "gesturechange"].forEach((t) => document.addEventListener(t, (e) => e.preventDefault(), { passive: false }));
 
 const qs = new URLSearchParams(location.search);
 const TV = qs.has("screen");
@@ -357,6 +399,7 @@ let BUILD = null;
 let ws, role = null, code = null, ROWS = 0, COLS = 0, WALLS = [], ITEMS = {}, S = null;
 let seq = 0, opt = null, localCd = 0, lastLocalMiss = 0;   // 預測:先畫結果,伺服器確認後再對齊
 let aiming = false, endsAt = 0, cdEnds = 0, placing = -1;
+let prevGot = null, lastLeft = -1, lastK = -1;   // 音效用:偵測「剛剛發生了什麼」
 
 /* ---------- 連線 ---------- */
 function connect(then){
@@ -431,8 +474,10 @@ function drawLobby(m){
   $("lbQr").src = "/qr/" + m.code + ".svg";
   $("lbQr").classList.toggle("hide", role === "chaser");
   const rows = [];
-  if (m.boss) rows.push(`<div class="prow${m.boss.online ? "" : " off"}"><span class="ava boss">🦹</span>${esc(m.boss.name)}<span class="x">大盜${role === "boss" ? "(你)" : ""}</span></div>`);
-  m.chasers.forEach((c, i) => rows.push(`<div class="prow popin${c.online ? "" : " off"}"><span class="ava" style="background:${CCOL[i]}">👨‍🍳</span>${esc(c.name)}${role === "boss" ? `<button class="x" data-kick="${i}">請出去 ✕</button>` : ""}</div>`));
+  if (lastK >= 0 && m.k > lastK) SFX.play("join");
+  lastK = m.k;
+  if (m.boss) rows.push(`<div class="prow${m.boss.online ? "" : " off"}"><span class="ava t">${ART.thief(THIEF_BG)}</span>${esc(m.boss.name)}<span class="x">大盜${role === "boss" ? "(你)" : ""}</span></div>`);
+  m.chasers.forEach((c, i) => rows.push(`<div class="prow popin${c.online ? "" : " off"}"><span class="ava t">${ART.chef(CHEX[i])}</span>${esc(c.name)}${role === "boss" ? `<button class="x" data-kick="${i}">請出去 ✕</button>` : ""}</div>`));
   for (let i = m.chasers.length; i < 4; i++) rows.push(`<div class="prow empty"><span class="ava"></span>等店員加入…</div>`);
   $("lbList").innerHTML = rows.join("");
   $("lbList").querySelectorAll("[data-kick]").forEach((b) => b.onclick = () => sendMsg({ t:"kick", i: +b.dataset.kick }));
@@ -441,22 +486,24 @@ function drawLobby(m){
   if (role === "boss"){
     const rate = m.recentGames ? Math.round(m.recentWins / m.recentGames * 100) + "%" : "—";
     $("lbDiff").innerHTML = `店員難度 <b>${m.d > 0 ? "+" : ""}${m.d}</b>(${Math.max(1, m.k)} 個店員)<br>` +
-      `⏱ ${m.timeS} 秒 · 🍕 偷 ${m.need} 片就贏<br>` +
+      `${icon("clock")} ${m.timeS} 秒 · ${icon("pizza")} 偷 ${m.need} 片就贏<br>` +
       `<span style="color:var(--dim);font-size:12px">這個人數玩了 ${m.games} 場 · 近 ${m.recentGames} 場店員過關率 ${rate}</span>`;
     $("bStart").disabled = m.k < 1;
     $("bStart").textContent = m.k < 1 ? "等店員加入…" : `開始!(${m.k} 個店員)`;
     $("tvHint").innerHTML = `大螢幕請開 <b>${location.host}/?screen=${m.code}</b>`;
   }
-  $("lbTip").textContent = role === "chaser" ? "你是 👨‍🍳 店員,準備抓人!" : "店員掃 QR code,或在首頁輸入房號";
-  $("lbWait").textContent = role === "boss" ? "" : "⏳ 等大盜按開始…";
+  $("lbTip").textContent = role === "chaser" ? "你是店員,準備抓人!" : "店員掃 QR code,或在首頁輸入房號";
+  $("lbWait").textContent = role === "boss" ? "" : "等大盜按開始…";
 }
 
 function countdown(ms){
   show("count");
   let n = Math.ceil(ms / 1000);
-  const tick = () => { const el = $("cntNum"); el.textContent = n; el.classList.remove("tick"); void el.offsetWidth; el.classList.add("tick"); };
+  const tick = () => { const el = $("cntNum"); el.textContent = n; el.classList.remove("tick"); void el.offsetWidth; el.classList.add("tick"); SFX.play("count"); };
   tick();
-  $("cntRole").textContent = role === "boss" ? "🦹 偷披薩,別被抓到!" : role === "chaser" ? "👨‍🍳 去抓大盜!" : "準備開始…";
+  setTimeout(() => SFX.play("go"), ms);
+  const tk = role === "boss" ? ART.thief(THIEF_BG) : role === "chaser" ? ART.chef(CHEX[0]) : "";
+  $("cntRole").innerHTML = (tk ? `<div class="tk">${tk}</div>` : "") + (role === "boss" ? "偷披薩,別被抓到!" : role === "chaser" ? "去抓大盜!" : "準備開始…");
   const iv = setInterval(() => { if (--n <= 0) return clearInterval(iv); tick(); }, 1000);
 }
 
@@ -464,7 +511,7 @@ function countdown(ms){
 function startGame(m){
   ROWS = m.rows; COLS = m.cols; WALLS = m.walls; ITEMS = m.items;
   show("game");
-  drawBuf(); placing = -1; clearInk(); S = null; opt = null; localCd = 0;
+  drawBuf(); placing = -1; clearInk(); S = null; opt = null; localCd = 0; prevGot = null; lastLeft = -1;
   drawRole();
   $("tvCode").textContent = code;
   $("tvLog").innerHTML = "";
@@ -476,7 +523,7 @@ function startGame(m){
     const d = document.createElement("div");
     d._base = "cell" + ((Math.floor(i / COLS) + i % COLS) % 2 ? " alt" : "");
     d.className = d._base + (WALLS[i] ? " wall" : "");
-    d.innerHTML = `<span class="n"></span>`;
+    d.innerHTML = WALLS[i] ? ART.wallFor(WALLS, ROWS, COLS, i) : `<span class="n"></span>`;
     d.dataset.i = i;
     map.appendChild(d);
   }
@@ -484,7 +531,7 @@ function startGame(m){
 }
 function drawRole(){
   const t = $("roleTag");
-  t.textContent = role === "boss" ? "🦹 大盜" : role === "chaser" ? "👨‍🍳 店員" : "📺 觀戰";
+  t.textContent = role === "boss" ? "大盜" : role === "chaser" ? "店員" : "觀戰";
   t.className = "pill role " + (role || "") + (role === "boss" ? " hide" : "");   // 大盜那格位置留給道具
   $("items").classList.toggle("hide", role !== "boss");
   $("bQuit").classList.toggle("hide", role !== "boss");
@@ -492,7 +539,7 @@ function drawRole(){
 function sizeMap(){
   if (!COLS) return;
   const w = $("mapwrap");
-  const fw = w.clientWidth - 12 - 14, fh = w.clientHeight - 4 - 14 - 6;   // 扣掉外框、padding、陰影
+  const fw = w.clientWidth - 12 - 14 - 8, fh = w.clientHeight - 4 - 14 - 6 - 30;   // 扣掉外框、padding、陰影、遮雨棚
   const cs = Math.max(20, Math.floor(Math.min((fw - 3 * (COLS - 1)) / COLS, (fh - 3 * (ROWS - 1)) / ROWS)));
   $("map").style.setProperty("--cs", cs + "px");
   $("map").style.fontSize = Math.round(cs * 0.38) + "px";
@@ -512,7 +559,9 @@ function render(s){
     } else opt = null;
   }
   endsAt = Date.now() + s.msLeft;
-  $("pzCount").textContent = `🍕 ${s.got}/${s.need}`;
+  $("pzN").textContent = `${s.got}/${s.need}`;
+  if (prevGot !== null && s.got > prevGot) SFX.play("pizza");
+  prevGot = s.got;
   $("pzBar").style.width = Math.min(100, s.got / s.need * 100) + "%";
   const me = s.me;
   const cells = $("map").children;
@@ -536,9 +585,9 @@ function render(s){
     else if (canGo) cls += role === "chaser" && bossHere ? " catch" : " can";
     if (c.className !== cls) c.className = cls;
     let html = `<span class="n">${s.nums[i]}</span>`;
-    if (pizzas.has(i)) html += `<span class="pz">🍕</span>`;
+    if (pizzas.has(i)) html += `<span class="pz">${ART.pizza()}</span>`;
     if (p){
-      html += p.role === "boss" ? `<span class="who boss">🦹</span>` : `<span class="who" style="background:${CCOL[p.idx]}">👨‍🍳</span>`;
+      html += `<span class="who">${tokenOf(p, p.stun ? "dizzy" : "")}</span>`;
       if (p.role === "chaser") html += `<span class="tag" style="background:${CCOL[p.idx]}">${esc(p.name.slice(0, 2))}</span>`;
     }
     if (c._h !== html){ c.innerHTML = html; c._h = html; }
@@ -559,10 +608,10 @@ function render(s){
 function drawTarget(me){
   const t = $("target");
   if (me.aim === null || me.aim === undefined){
-    const goal = role === "boss" ? "去偷 🍕,別被抓" : "走進 🦹 的格子就抓到";
-    t.innerHTML = `<div class="hint">${placing >= 0 ? "🪑 點紅框放桌子<br><small>再按道具取消</small>"
-      : me.freeMoves > 0 ? `🛵 直接走!<br><small>還有 ${me.freeMoves} 步免解題</small>`
-      : `👆 點或滑動選格子<br><small>${goal}</small>`}</div>`;
+    const goal = role === "boss" ? "去偷披薩,別被抓" : "走進大盜的格子就抓到";
+    t.innerHTML = `<div class="hint">${placing >= 0 ? `${icon("table")} 點紅框放桌子<br><small>再按道具取消</small>`
+      : me.freeMoves > 0 ? `${icon("scoot")} 直接走!<br><small>還有 ${me.freeMoves} 步免解題</small>`
+      : `點或滑動選格子<br><small>${goal}</small>`}</div>`;
     return;
   }
   const chips = me.got.map((g) => `<span class="chip">÷${g}</span>`).join("");
@@ -572,8 +621,8 @@ function drawTarget(me){
 function drawItems(me){
   const h = Object.keys(ITEMS).map((key, k) => {
     const d = ITEMS[key], left = me.items[k];
-    if (!left) return `<button class="item used" disabled><span class="e">${d.emoji}</span>用過</button>`;
-    return `<button class="item${placing === k ? " on" : ""}" data-s="${k}" title="${d.desc}"><span class="e">${d.emoji}</span>${placing === k ? "取消" : d.name}</button>`;
+    if (!left) return `<button class="item used" disabled><span class="e">${ART.item(key)}</span>用過</button>`;
+    return `<button class="item${placing === k ? " on" : ""}" data-s="${k}" title="${d.desc}"><span class="e">${ART.item(key)}</span>${placing === k ? "取消" : d.name}</button>`;
   }).join("");
   if ($("items")._h !== h){
     $("items").innerHTML = h; $("items")._h = h;
@@ -598,6 +647,7 @@ function tapCell(i){
   const me = S.me;
   if (adj(me.pos, i) !== 1 || me.aim === i || !walkableHere(i)) return;
   sendMsg({ t:"aim", i, seq: ++seq });
+  SFX.play(role === "boss" && me.freeMoves > 0 ? "step" : "select");
   predict(() => {
     if (role === "boss" && me.freeMoves > 0){ me.freeMoves--; me.pos = i; me.aim = null; me.rem = 0; me.got = []; }
     else { me.aim = i; me.aimN = S.nums[i]; me.rem = me.aimN; me.got = []; }
@@ -639,8 +689,8 @@ $("map").addEventListener("pointerup", endGest);
 $("map").addEventListener("pointercancel", endGest);
 function drawTvSide(s){
   const rows = s.people.map((p) => p.role === "boss"
-    ? `<div class="prow"><span class="ava boss">🦹</span>${esc(p.name)}<span class="x">🍕 ${s.got}/${s.need}</span></div>`
-    : `<div class="prow${p.online ? "" : " off"}"><span class="ava" style="background:${CCOL[p.idx]}">👨‍🍳</span>${esc(p.name)}${p.stun ? '<span class="x">💫 暈了</span>' : ""}</div>`);
+    ? `<div class="prow"><span class="ava t">${tokenOf(p)}</span>${esc(p.name)}<span class="x">${icon("pizza")} ${s.got}/${s.need}</span></div>`
+    : `<div class="prow${p.online ? "" : " off"}"><span class="ava t">${tokenOf(p, p.stun ? "dizzy" : "")}</span>${esc(p.name)}${p.stun ? '<span class="x">暈了</span>' : ""}</div>`);
   $("tvList").innerHTML = rows.join("");
 }
 
@@ -653,7 +703,7 @@ $("pad").innerHTML = KEYS.map((k) => `<button class="key${k === "★" ? " star" 
   b.onpointerdown = (e) => { e.preventDefault(); if (b.disabled) return; b.classList.add("down"); tap(b.dataset.k); };
   b.onpointerup = b.onpointerleave = b.onpointercancel = () => b.classList.remove("down");
 });
-// 🐙 墨汁:隨機噴幾坨不規則的墨漬 + 小墨點,時間到慢慢淡掉
+// 墨汁:隨機噴幾坨不規則的墨漬 + 小墨點,時間到慢慢淡掉
 function blob(r){
   const n = 9 + Math.floor(Math.random() * 5), pts = [];
   for (let i = 0; i < n; i++){
@@ -686,14 +736,14 @@ function ink(ms, quiet){
   inkUntil = Date.now() + ms;
   clearTimeout(inkTimer);
   inkTimer = setTimeout(() => { box.classList.add("fade"); inkTimer = setTimeout(clearInk, 950); }, Math.max(0, ms - 900));
-  if (!quiet){ flash("🐙 被噴墨汁了!", "skill"); if (navigator.vibrate) navigator.vibrate([60, 40, 60]); }
+  if (!quiet){ flash("被噴墨汁了!什麼都看不清楚", "skill"); if (navigator.vibrate) navigator.vibrate([60, 40, 60]); }
 }
 function clearInk(){ clearTimeout(inkTimer); inkTimer = null; inkUntil = 0; $("ink").innerHTML = ""; $("ink").classList.remove("fade"); }
 
 function drawBuf(){
   if (Date.now() < cdEnds) return;
   const v = $("val");
-  v.textContent = aiming ? "按質因數 👇" : "先選格子 👆";
+  v.textContent = aiming ? "按質因數" : "先選格子";
   v.classList.add("ph");
 }
 function tap(k){
@@ -706,8 +756,11 @@ function tap(k){
     localCd = Date.now() + 1000; cdEnds = localCd; lastLocalMiss = Date.now();
     flash(bad, "bad");
     missFx();
+    SFX.play("miss");
     return predict(() => {});
   }
+  SFX.play("hit", me.got.length);
+  if (me.rem / v === 1) setTimeout(() => SFX.play("step"), 90);
   predict(() => {
     me.rem /= v; me.got.push(v);
     if (me.rem === 1){ me.pos = me.aim; me.aim = null; me.rem = 0; me.got = []; }
@@ -730,6 +783,7 @@ addEventListener("keydown", (e) => {
 function fx(m){
   if (m.kind === "miss" && Date.now() - lastLocalMiss > 1500) missFx();   // 自己已經先震過就不再震一次
   if (m.kind === "ink") ink(m.ms);
+  if (m.kind === "item") SFX.play(m.item);
 }
 function missFx(){
   $("disp").classList.remove("shake"); void $("disp").offsetWidth; $("disp").classList.add("shake");
@@ -752,27 +806,39 @@ function drawOver(m){
   show("over"); placing = -1; clearInk(); aiming = false;
   const quit = m.why === "quit";
   const youWin = quit ? null : role === "boss" ? !m.chasersWin : role === "chaser" ? m.chasersWin : null;
-  const head = m.why === "caught" ? `🚔 大盜被 ${esc(m.catcher)} 抓到了!`
-             : m.why === "pizza"  ? `🦹 大盜帶著 ${m.got} 片披薩逃走了!`
+  const head = m.why === "caught" ? `大盜被 ${esc(m.catcher)} 抓到了!`
+             : m.why === "pizza"  ? `大盜帶著 ${m.got} 片披薩逃走了!`
              : quit ? `大盜結束了這局`
-             : `⏱ 時間到,大盜成功脫逃!`;
-  $("oEmoji").textContent = quit ? "🛑" : youWin === null ? (m.chasersWin ? "🚔" : "🦹") : youWin ? "🎉" : "😵";
+             : `時間到,大盜成功脫逃!`;
+  // 結算插圖:贏的那一方大大的,輸的那方在旁邊暈倒;自己贏了再灑星星
+  const chasers = m.stats.filter((p) => p.role === "chaser");
+  const ci = Math.max(0, chasers.findIndex((p) => p.name === m.catcher));
+  const sp = (x, y, d) => `<i class="sp" style="left:${x}%;top:${y}%;animation-delay:${d}s">${ART.sparkle()}</i>`;
+  $("oEmoji").innerHTML = quit ? `<i class="main">${ART.stop()}</i>`
+    : m.chasersWin ? `<i class="main">${ART.chef(CHEX[ci])}</i><i class="side">${ART.thief(THIEF_BG, "dizzy")}</i>`
+    : `<i class="main">${ART.thief(THIEF_BG)}</i><i class="side">${ART.pizza()}</i>`;
+  if (youWin) $("oEmoji").innerHTML += sp(-18, 4, 0) + sp(96, -6, .4) + sp(-8, 70, .8);
+  if (!quit){
+    if (m.why === "caught") SFX.play("catch");
+    const fin = youWin === false ? "lose" : "win";
+    setTimeout(() => SFX.play(fin), m.why === "caught" ? 750 : 0);
+  }
   $("oEmoji").classList.remove("popin"); void $("oEmoji").offsetWidth; $("oEmoji").classList.add("popin", "wobble");
   $("oTitle").innerHTML = (youWin === null ? "" : youWin ? "你贏了!<br>" : "差一點!<br>") + head;
   $("oTitle").style.color = youWin === null ? "var(--ink)" : youWin ? "var(--basil)" : "var(--tomato)";
-  $("oSub").innerHTML = `${quit ? "這局不算勝負" : m.chasersWin ? "👨‍🍳 店員過關" : "🦹 大盜勝"} · 用時 ${m.elapsed} 秒 · 🍕 ${m.got}/${m.need}`;
+  $("oSub").innerHTML = `${quit ? "這局不算勝負" : m.chasersWin ? "店員過關" : "大盜勝"} · 用時 ${m.elapsed} 秒 · ${icon("pizza")} ${m.got}/${m.need}`;
   $("oStats").innerHTML = `<tr><th></th><th>走了幾步</th><th>打錯</th></tr>` +
-    m.stats.map((p) => `<tr class="${p.role === role && p.name === myName() ? "mine" : ""}"><td>${p.role === "boss" ? "🦹" : "👨‍🍳"} ${esc(p.name)}</td><td>${p.moves}</td><td>${p.misses}</td></tr>`).join("");
+    m.stats.map((p) => `<tr class="${p.role === role && p.name === myName() ? "mine" : ""}"><td><span style="display:flex;align-items:center;gap:6px"><i class="i" style="width:26px;height:26px">${p.role === "boss" ? ART.thief(THIEF_BG) : ART.chef(CHEX[chasers.indexOf(p)])}</i>${esc(p.name)}</span></td><td>${p.moves}</td><td>${p.misses}</td></tr>`).join("");
   const ch = m.stats.filter((p) => p.role === "chaser");
   const aw = [];
   if (ch.length){
     const run = ch.reduce((a, b) => (b.moves > a.moves ? b : a));
     const shaky = ch.reduce((a, b) => (b.misses > a.misses ? b : a));
-    if (run.moves > 0) aw.push(`🏃 最勤勞的店員:${esc(run.name)}(${run.moves} 步)`);
-    if (shaky.misses > 0) aw.push(`🫗 手最抖:${esc(shaky.name)}(打錯 ${shaky.misses} 次)`);
+    if (run.moves > 0) aw.push(`<b>跑最多</b> ${esc(run.name)},走了 ${run.moves} 步`);
+    if (shaky.misses > 0) aw.push(`<b>手最抖</b> ${esc(shaky.name)},按錯 ${shaky.misses} 次`);
   }
-  if (m.catcher) aw.push(`🚔 逮捕英雄:${esc(m.catcher)}`);
-  $("oAwards").innerHTML = aw.join("<br>") || "—";
+  if (m.catcher) aw.push(`<b>逮捕英雄</b> ${esc(m.catcher)}`);
+  $("oAwards").innerHTML = aw.map((x) => `<div>${x}</div>`).join("");
   $("oAwards").classList.toggle("hide", !aw.length);
   $("bLobby").classList.toggle("hide", role !== "boss");
   $("oWait").textContent = role === "boss" ? quit ? "這局不算進難度" : `下一局難度 ${m.d > 0 ? "+" : ""}${m.d}(本局 ${m.dBefore})` : "等大盜開下一局…";
@@ -782,12 +848,14 @@ function drawOver(m){
 setInterval(() => {
   if ($("game").classList.contains("hide")) return;
   const left = Math.max(0, Math.ceil((endsAt - Date.now()) / 1000));
-  $("clock").textContent = `⏱ ${left}`;
+  $("clockN").textContent = left;
   $("clock").classList.toggle("low", left <= 15);
+  if (left !== lastLeft && left > 0 && left <= 10 && lastLeft !== -1) SFX.play("tick");
+  lastLeft = left;
   const cd = cdEnds - Date.now(), on = cd > 0;
   $("disp").classList.toggle("cool", on);
-  if (on){ $("val").textContent = `💫 ${(cd / 1000).toFixed(1)}s`; $("val").classList.remove("ph"); }
-  else if ($("val").textContent.startsWith("💫")) drawBuf();
+  if (on){ $("val").innerHTML = `${icon("stars")}${(cd / 1000).toFixed(1)}s`; $("val").classList.remove("ph"); $("val")._stun = true; }
+  else if ($("val")._stun){ $("val")._stun = false; drawBuf(); }
   [...$("pad").children].forEach((b) => (b.disabled = on || !aiming));
 }, 100);
 </script>
