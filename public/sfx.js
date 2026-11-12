@@ -5,11 +5,40 @@
   let on = true;
   try { on = localStorage.getItem("pt_sound") !== "0"; } catch {}
 
+  // iPhone 的靜音開關會把網頁音效整個關掉(影片、音樂不會)。
+  // 新版 iOS 可以宣告「我是播放型」;舊版改用一段無聲的 <audio> 一直播,讓系統切成播放模式。
+  let silentEl = null;
+  function silentWavUrl() {
+    const n = 4410, buf = new ArrayBuffer(44 + n * 2), v = new DataView(buf);   // 0.1 秒、全部是 0 的 WAV
+    const w = (o, s) => [...s].forEach((c, i) => v.setUint8(o + i, c.charCodeAt(0)));
+    w(0, "RIFF"); v.setUint32(4, 36 + n * 2, true); w(8, "WAVE"); w(12, "fmt ");
+    v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+    v.setUint32(24, 44100, true); v.setUint32(28, 88200, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+    w(36, "data"); v.setUint32(40, n * 2, true);
+    return URL.createObjectURL(new Blob([buf], { type: "audio/wav" }));
+  }
+  function ignoreMuteSwitch() {
+    try {
+      if (navigator.audioSession) { navigator.audioSession.type = "playback"; return; }   // iOS 17+
+    } catch {}
+    if (!/iPhone|iPad|iPod/.test(navigator.userAgent) && !(navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)) return;
+    try {
+      if (!silentEl) {
+        silentEl = document.createElement("audio");
+        silentEl.src = silentWavUrl(); silentEl.loop = true;
+        silentEl.setAttribute("playsinline", ""); silentEl.setAttribute("x-webkit-airplay", "deny");
+      }
+      if (silentEl.paused) { const p = silentEl.play(); if (p && p.catch) p.catch(() => {}); }
+    } catch {}
+  }
+
   function unlock() {
+    if (!on) return;
+    ignoreMuteSwitch();
     if (!ctx) {
       const AC = window.AudioContext || window.webkitAudioContext;
       if (!AC) return;
-      ctx = new AC();
+      try { ctx = new AC({ latencyHint: "interactive" }); } catch { ctx = new AC(); }
       master = ctx.createGain(); master.gain.value = 0.55;
       const comp = ctx.createDynamicsCompressor();          // 疊很多聲音時不要爆音
       master.connect(comp).connect(ctx.destination);
@@ -17,10 +46,21 @@
       const d = noiseBuf.getChannelData(0);
       for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
     }
-    if (ctx.state === "suspended") ctx.resume();
+    // iPhone 鎖螢幕 / 切 App / 來電後會變成 "interrupted",不只 "suspended",兩種都要叫醒
+    if (ctx.state !== "running") { const p = ctx.resume(); if (p && p.catch) p.catch(() => {}); }
+    // 有些手機要「真的播過一個聲音」才會打開喇叭:播一個極短的無聲 buffer
+    try {
+      const s = ctx.createBufferSource(); s.buffer = ctx.createBuffer(1, 1, ctx.sampleRate);
+      s.connect(ctx.destination); s.start(0);
+    } catch {}
   }
-  addEventListener("pointerdown", unlock, true);
-  addEventListener("keydown", unlock, true);
+  // iPhone 只承認「手指放開」(touchend / click)那一下能解鎖聲音,按下(pointerdown)不算,所以全部都掛
+  ["pointerdown", "pointerup", "touchend", "click", "keydown"].forEach((t) => addEventListener(t, unlock, true));
+  // 切回這個分頁時,下一次碰畫面就會叫醒;這裡先試一次(有些瀏覽器允許)
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible" && ctx && ctx.state !== "running") ctx.resume().catch(() => {});
+    if (document.visibilityState === "hidden" && silentEl) silentEl.pause();   // 不在畫面上就別佔著播放
+  });
 
   const NOTE = (n) => 440 * Math.pow(2, (n - 69) / 12);     // MIDI 音高 → 頻率
 
@@ -109,14 +149,16 @@
 
   window.SFX = {
     play(name, ...a) {
-      if (!on || !ctx || ctx.state !== "running" || !SOUNDS[name]) return;
+      if (!on || !ctx || !SOUNDS[name]) return;
+      if (ctx.state !== "running") { ctx.resume().catch(() => {}); return; }   // 被暫停了:先叫醒,這一聲就算了
       try { SOUNDS[name](...a); } catch {}
     },
     get on() { return on; },
     toggle() {
       on = !on;
       try { localStorage.setItem("pt_sound", on ? "1" : "0"); } catch {}
-      if (on) { unlock(); setTimeout(() => SFX.play("join"), 30); }
+      if (on) { unlock(); setTimeout(() => SFX.play("join"), 60); }
+      else if (silentEl) silentEl.pause();
       return on;
     },
   };

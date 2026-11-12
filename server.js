@@ -97,18 +97,19 @@ const maxRun = (f) => { let best = 1, run = 1; for (let i = 1; i < f.length; i++
 // 所以每個數字最多只能有 1 個比 13 大的質因數 —— 那個要靠 ★ 收尾。
 // 四種地形,讓地圖有好走和難走的路:
 //   easy  兩位數、只有小質因數   12 → 2 2 3
-//   mid   三位數、小質因數堆疊   210 → 2 3 5 7
+//   mid   100~300、小質因數堆疊 210 → 2 3 5 7
 //   hard  藏著大質數或很像質數   94 → 2 ★(47)、91 → 7 13(91 不是質數!)
 //   prime 兩位數質數(捷徑)     97 → ★ 一下就過
 const SMALL_PRIMES = [2, 3, 5, 7, 11, 13];
 const POOL = (() => {
   const easy = [], mid = [], hard = [], prime = [];
-  for (let n = 10; n <= 999; n++) {
+  const MAX_N = 300;   // 所有格子的數字都在 300 以下,心算得動
+  for (let n = 10; n <= MAX_N; n++) {
     const f = factorize(n);
     if (f.length === 1) { if (n <= 97) prime.push(n); continue; }
     const big = f.filter((x) => x > 13);
     if (big.length > 1 || big[0] > 97 || f.length > 4 || maxRun(f) > 3) continue;   // 大質數限兩位數,認得出來才公平
-    if (big.length === 1 || (f.length === 2 && f[0] >= 7)) { if (f.length <= 3 && n <= 300) hard.push(n); }   // 太大的心算不動
+    if (big.length === 1 || (f.length === 2 && f[0] >= 7)) { if (f.length <= 3) hard.push(n); }
     else if (n < 100) easy.push(n);
     else if (f.length >= 3) mid.push(n);
   }
